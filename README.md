@@ -26,6 +26,11 @@ But confirmed list of models which were verified to work fine is below:
 
 Please, create an ticket if you tested it with other device model so we could extend the list.
 
+# Limitations
+
+* Using device password is not supported
+* Reading information form built-in sensors (for Eco Energy series) is not supported
+
 # Credits
 Dmitry Berezovsky
 

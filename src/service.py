@@ -63,6 +63,7 @@ class PranaDeviceManager(object):
 class PranaDevice(object):
     CONTROL_SERVICE_UUID = '0000baba-0000-1000-8000-00805f9b34fb'
     CONTROL_RW_CHARACTERISTIC_UUID = '0000cccc-0000-1000-8000-00805f9b34fb'
+    STATE_MSG_PREFIX = b'\xbe\xef'
 
     class Cmd:
         ENABLE_HIGH_SPEED = bytearray([0xBE, 0xEF, 0x04, 0x07])
@@ -142,7 +143,7 @@ class PranaDevice(object):
         await self._send_command(self.Cmd.STOP)
 
     def __parse_state(self, data: bytearray):
-        if not data[:2] == b'\xbe\xef':
+        if not data[:2] == self.STATE_MSG_PREFIX:
             return None
         s = PranaState()
         print(data)
