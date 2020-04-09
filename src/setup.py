@@ -97,7 +97,7 @@ setup(
     # ],
     entry_points={
         'console_scripts': [
-            'prana=prana_rc.cli:main',
+            'prana=prana_rc.cli:run_cli',
         ],
     }
 )

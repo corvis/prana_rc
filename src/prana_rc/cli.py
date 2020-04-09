@@ -51,7 +51,7 @@ class DiscoveryCLIExtension(CliExtension):
 
     @classmethod
     def setup_parser(cls, parser: argparse.ArgumentParser):
-        parser.add_argument("-t", "--timeout", dest="timeout", action='store_true', required=False,
+        parser.add_argument("-t", "--timeout", dest="timeout", action='store', required=False,
                             help="Time in seconds to wait for devices",
                             default=5)
 
