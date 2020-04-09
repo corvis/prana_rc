@@ -35,6 +35,6 @@ Please, create an ticket if you tested it with other device model so we could ex
 Dmitry Berezovsky
 
 # Disclaimer
-This module is licensed under GPL v3. This means you are free to use it even in commercial projects.
+This module is licensed under GPL v3. This means you are free to use in non-commercial projects.
 
 The GPL license clearly explains that there is no warranty for this free software. Please see the included LICENSE file for details.

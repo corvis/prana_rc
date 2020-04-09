@@ -1,0 +1,11 @@
+{
+    "author": "Dmitry Berezovsky",
+    "back": false,
+    "exclude": "",
+    "include": "*.py",
+    "license": "gpl3",
+    "program": "prana",
+    "short": "Prana RC",
+    "single": true,
+    "year": "2020"
+}
