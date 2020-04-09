@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 #    Prana RC
 #    Copyright (C) 2020 Dmitry Berezovsky
 #    
@@ -16,25 +14,4 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Top level package for Prana RC."""
-
-__author__ = "Dmitry Berezovsky"
-__email__ = ""
-
-import logging
-import os
-import sys
-from prana_rc import cli
-
-_logger = logging.getLogger(__name__)
-_logger.addHandler(logging.NullHandler())
-_logger.setLevel(logging.DEBUG)
-if bool(os.environ.get("PRANA_LOGGING", False)):
-    FORMAT = "%(asctime)-15s %(name)-8s %(levelname)s: %(message)s"
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setLevel(logging.DEBUG)
-    handler.setFormatter(logging.Formatter(fmt=FORMAT))
-    _logger.addHandler(handler)
-
-if __name__ == "__main__":
-    cli.run_cli()
+__version__ = "0.1.0"
