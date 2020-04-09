@@ -1,6 +1,6 @@
 # Prana RC 
 
-![Prana device picture](prana_pic.jpg "Prana device picture")
+![Prana device picture](https://github.com/corvis/prana_rc/blob/master/prana_pic.jpg?raw=true"Prana device picture")
 
 **DISCLAIMER: This library is under active development now. There are no any stable release yet, so please do not 
 use it in your installation unless you are developer who would like to contribute into module**
