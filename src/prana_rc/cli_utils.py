@@ -80,7 +80,6 @@ class CliExtension(object):
                 CLI.print_error(e)
                 CLI.print_info("Reconnecting... Attempt #{}".format(attempt_number))
 
-
     @property
     def device_manager(self) -> PranaDeviceManager:
         return self.__devce_manager
@@ -101,12 +100,12 @@ def register_global_arguments(parser: argparse.ArgumentParser):
     parser.add_argument("-v", "--verbose", dest="verbose", action='store_true', required=False,
                         help="If set more verbose output will used",
                         default=False)
-    parser.add_argument("-i", "--iface", dest="iface", action='store', required=False,
+    parser.add_argument("-i", "--iface", dest="iface", action='store', required=False, type=str,
                         help="Bluetooth interface to be used",
                         default='hci0')
-    parser.add_argument("-d", "--device", dest="device", action='store', required=False,
+    parser.add_argument("-d", "--device", dest="device", action='store', required=False, type=str,
                         help="Mac address of the prana device to connect to device. Required for the most of commands")
-    parser.add_argument("-t", "--timeout", dest="timeout", action='store', required=False,
+    parser.add_argument("-t", "--timeout", dest="timeout", action='store', required=False, type=int,
                         help="Time in seconds to wait for device",
                         default=3)
 

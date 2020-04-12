@@ -79,8 +79,8 @@ class SetCLIExtension(CliExtension):
     def setup_parser(cls, parser: argparse.ArgumentParser):
         parser.add_argument("-s", "--speed", dest="speed", action='store', required=False, type=parse_speed_str,
                             help="Speed to set. Could be one of: 0-10, off, high, low")
-        parser.add_argument("-m", "--mode", dest="mode", action='store', required=False,
-                            help="Mode to set. Could be normal or night", choices=[s.value for s in Mode])
+        parser.add_argument("-m", "--mode", dest="mode", action='store', required=False, type=Mode,
+                            help="Mode to set. Could be normal, night or high")
         parser.add_argument("-w", "--winter-mode", dest="winter_mode", action='store', required=False,
                             type=parse_bool_val, help="Enable or disable winter mode (de-icing)")
         parser.add_argument("-q", "--heating", dest="heating", action='store', required=False,
