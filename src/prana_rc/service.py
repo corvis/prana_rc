@@ -15,9 +15,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import asyncio
+import datetime
+import logging
+
 import bleak
 
-from prana_rc.entity import PranaState, PranaDeviceInfo
+from prana_rc.entity import PranaState, PranaDeviceInfo, Speed
 from asyncio import AbstractEventLoop
 from typing import Dict, List, Union, Optional
 
@@ -28,6 +31,7 @@ class PranaDeviceManager(object):
     def __init__(self, iface: str = 'hci0', loop: Optional[AbstractEventLoop] = None) -> None:
         self.__ble_interface = iface
         self.__loop = loop
+        self.__logger = logging.getLogger(self.__class__.__name__)
         self.__managed_devices = {}  # type: Dict['str', PranaDevice]
 
     @classmethod
@@ -61,15 +65,24 @@ class PranaDeviceManager(object):
                         filter(PranaDeviceManager.__is_prana_device, discovered_devs)
                         ))
 
-    async def connect(self, target: Union[str, PranaDeviceInfo], timeout: float = 5) -> 'PranaDevice':
+    async def connect(self, target: Union[str, PranaDeviceInfo], timeout: float = 5, attempts=1) -> 'PranaDevice':
         address = self.__addr_for_target(target)
         device = self.__managed_devices.get(address, None)
         if device is None:  # If not found in managed devices list
             device = PranaDevice(address, self.__loop, self.__ble_interface)
             self.__managed_devices[address] = device
         # if not await device.is_connected():
-        await device.connect(timeout)
-        return device
+        attempts_left = attempts
+        while attempts_left > 0:
+            try:
+                await device.connect(timeout)
+                return device
+            except Exception as e:
+                if attempts == 1:
+                    raise e
+                self.__logger.warning("Connection failed. Re-connecting...".format(attempts))
+                attempts_left -= 1
+        raise RuntimeError("Connection to device {} failed after {} attempts".format(address, attempts))
 
     async def disconnect_all(self):
         for dev in self.__managed_devices.values():
@@ -114,6 +127,9 @@ class PranaDevice(object):
                 'PranaDevice constructor error: Target must be eithermac address or PranaDeviceInfo instance')
         self.__client = bleak.BleakClient(self.__address, loop, device=iface)
         self.__has_connect_attempts = False
+        self.__notification_bytes = None  # type: bytearray
+        self.__state = None  # type: PranaState
+        self.__read_state_event = None  # type: asyncio.Event
 
     async def __verify_connected(self):
         if not await self.is_connected():
@@ -121,8 +137,10 @@ class PranaDevice(object):
 
     def notification_handler(self, sender, data):
         """Simple notification handler which prints the data received."""
-        # print("{0}: {1}".format(sender, data))
-        print(self.__parse_state(data))
+        self.__notification_bytes = data
+        # Notify waiters
+        if self.__read_state_event is not None:
+            self.__read_state_event.set()
 
     async def connect(self, timeout: float = 2):
         # if not await self.is_connected():
@@ -139,30 +157,87 @@ class PranaDevice(object):
             return False
         return await self.__client.is_connected()
 
-    async def _send_command(self, command: bytearray, expect_reply=False) -> bytearray:
-        await self.__client.write_gatt_char(self.CONTROL_RW_CHARACTERISTIC_UUID, command, response=True)
-        await asyncio.sleep(0.6)
-        result = await self.__client.read_gatt_char(self.CONTROL_RW_CHARACTERISTIC_UUID, use_cached=False)
+    async def _send_command(self, command: bytearray, expect_reply=False):
+        # Invalidate state
+        self.__state = None
+        await self.__client.write_gatt_char(self.CONTROL_RW_CHARACTERISTIC_UUID, command, response=expect_reply)
         if expect_reply:
-            return result
+            self.__read_state_event = asyncio.Event()
+            await asyncio.wait_for(self.__wait_for_read_event(), timeout=1)
+            return self.__notification_bytes
+        # await asyncio.sleep(0.6)
+        # result = await self.__client.read_gatt_char(self.CONTROL_RW_CHARACTERISTIC_UUID, use_cached=False)
+        # if expect_reply:
+        #     return result
 
     async def set_high_speed(self):
         await self.__verify_connected()
         await self._send_command(self.Cmd.ENABLE_HIGH_SPEED)
 
+    async def speed_up(self):
+        await self.__verify_connected()
+        await self._send_command(self.Cmd.SPEED_UP)
+
+    async def speed_down(self):
+        await self.__verify_connected()
+        await self._send_command(self.Cmd.SPEED_DOWN)
+
+    async def set_low_speed(self):
+        await self.__verify_connected()
+        await self._send_command(self.Cmd.ENABLE_NIGHT_MODE)
+
     async def set_night_mode(self):
         await self.__verify_connected()
         await self._send_command(self.Cmd.ENABLE_NIGHT_MODE)
+
+    async def set_normal_speed(self):
+        await self.set_speed(Speed.SPEED_3)
+
+    async def set_speed(self, speed: Speed):
+        if speed == Speed.LOW:
+            await self.set_low_speed()
+        elif speed == Speed.HIGH:
+            await self.set_high_speed()
+        elif speed == Speed.OFF:
+            await self.turn_off()
+        else:
+            # Other speeds couldn't be set with one single command
+            direction_up = speed.value <= 5
+            if direction_up:
+                await self.set_low_speed()
+                counter = Speed.LOW.value
+                while counter != speed.value:
+                    await self.speed_up()
+                    counter += 1
+            else:
+                await self.set_high_speed()
+                counter = Speed.HIGH.value
+                while counter != speed.value:
+                    await self.speed_down()
+                    counter -= 1
+
+    async def set_heating(self, enable: bool):
+        state = await self.read_state()
+        if state.mini_heating_enabled != enable:
+            await self._send_command(self.Cmd.TOGGLE_HEATING)
+
+    async def set_winter_mode(self, enable: bool):
+        state = await self.read_state()
+        if state.winter_mode_enabled != enable:
+            await self._send_command(self.Cmd.TOGGLE_WINTER_MODE)
 
     async def turn_off(self):
         await self.__verify_connected()
         await self._send_command(self.Cmd.STOP)
 
+    async def turn_on(self, speed=Speed.SPEED_3):
+        await self.set_speed(speed)
+
     def __parse_state(self, data: bytearray):
         if not data[:2] == self.STATE_MSG_PREFIX:
             return None
         s = PranaState()
-        print(data)
+        s.timestamp = datetime.datetime.now()
         s.speed_locked = int(data[26] / 10)
         s.speed_in = int(data[30] / 10)
         s.speed_out = int(data[34] / 10)
@@ -176,12 +251,22 @@ class PranaDevice(object):
         s.is_output_fan_on = bool(data[32])
         return s
 
-    async def read_state(self) -> PranaState:
+    async def read_state(self, force_read: bool = False) -> PranaState:
+        """
+        Read state from the devcie and return it as an object
+        :param force_read: If set, cached state will be ignored and read command to the device will be generated
+        :return:
+        """
         await self.__verify_connected()
         state_bin = await self._send_command(self.Cmd.READ_STATE, expect_reply=True)
-        return self.__parse_state(state_bin)
+        state = self.__parse_state(state_bin)
+        if state is not None:
+            self.__state = state
+        return state
 
-    async def test_retrieve_state(self):
-        async with bleak.BleakClient(self.__address) as client:
-            self.__client = client
-            return await self.read_state()
+    async def __wait_for_read_event(self):
+        if self.__read_state_event is not None:
+            await self.__read_state_event.wait()
+
+    def __has_relevant_state(self) -> bool:
+        return not (self.__state is None or (datetime.datetime.now() - self.__state.timestamp).seconds > 60)

@@ -13,8 +13,53 @@
 #    
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import datetime
+from enum import Enum
+from typing import NamedTuple, List
 
-from typing import NamedTuple
+
+class Speed(Enum):
+    OFF = 0
+    LOW = 1
+    HIGH = 10
+    SPEED_2 = 2
+    SPEED_3 = 3
+    SPEED_4 = 4
+    SPEED_5 = 5
+    SPEED_6 = 6
+    SPEED_7 = 7
+    SPEED_8 = 8
+    SPEED_9 = 9
+
+    @classmethod
+    def all_options(self) -> List[str]:
+        return ['low', 'l', 'high', 'h', 'off', 'stop', 2, 3, 4, 5, 6, 7, 8, 9]
+
+    @classmethod
+    def from_str(cls, speed: str) -> "Speed":
+        speed = str(speed).lower().strip()
+        if speed in ['low', 'l']:
+            return cls.LOW
+        if speed in ['high', 'h']:
+            return cls.HIGH
+        if speed in ['off', 'stop']:
+            return cls.OFF
+        try:
+            speed_int = int(speed)
+            if 0 <= speed_int <= 10:
+                return cls(speed_int)
+        except ValueError:
+            pass
+        raise ValueError('String {} is not valid speed identifier'.format(speed))
+
+    def to_int(self) -> int:
+        return int(self.value)
+
+
+class Mode(Enum):
+    NORMAL = 'normal'
+    NIGHT = 'night'
+    HIGH = 'high'
 
 
 class PranaDeviceInfo(NamedTuple):
@@ -38,6 +83,7 @@ class PranaState(object):
         self.winter_mode_enabled: bool = None
         self.is_input_fan_on: bool = None
         self.is_output_fan_on: bool = None
+        self.timestamp: datetime.datetime = None
 
     @property
     def speed(self):

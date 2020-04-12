@@ -19,6 +19,7 @@ import sys
 import traceback
 from asyncio import AbstractEventLoop
 
+from prana_rc.entity import Speed
 from prana_rc.service import PranaDeviceManager
 
 
@@ -59,6 +60,27 @@ class CliExtension(object):
         self.__devce_manager = device_manager
         self.__loop = loop
 
+    def _ensure_device_arg(self, args):
+        if args.device is None:
+            raise ValueError("Device is not set. Please check --device option.")
+
+    async def connect_to_device(self, args):
+        self._ensure_device_arg(args)
+        CLI.print_info("Connecting to {}...".format(args.device))
+        attempts_left = 10
+        attempt_number = 1
+        while attempts_left > 0:
+            try:
+                device = await self.device_manager.connect(args.device, args.timeout, attempts=1)
+                CLI.print_info("   Connected")
+                return device
+            except Exception as e:
+                attempts_left -= 1
+                attempt_number += 1
+                CLI.print_error(e)
+                CLI.print_info("Reconnecting... Attempt #{}".format(attempt_number))
+
+
     @property
     def device_manager(self) -> PranaDeviceManager:
         return self.__devce_manager
@@ -79,6 +101,26 @@ def register_global_arguments(parser: argparse.ArgumentParser):
     parser.add_argument("-v", "--verbose", dest="verbose", action='store_true', required=False,
                         help="If set more verbose output will used",
                         default=False)
-    parser.add_argument("-i", "--iface", dest="iface", action='store_true', required=False,
+    parser.add_argument("-i", "--iface", dest="iface", action='store', required=False,
                         help="Bluetooth interface to be used",
                         default='hci0')
+    parser.add_argument("-d", "--device", dest="device", action='store', required=False,
+                        help="Mac address of the prana device to connect to device. Required for the most of commands")
+    parser.add_argument("-t", "--timeout", dest="timeout", action='store', required=False,
+                        help="Time in seconds to wait for device",
+                        default=3)
+
+
+def parse_bool_val(v: str) -> bool:
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ('on', 'yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('off', 'no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+
+def parse_speed_str(v: str) -> Speed:
+    return Speed.from_str(v)
