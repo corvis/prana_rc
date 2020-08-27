@@ -17,7 +17,7 @@
 import argparse
 import sys
 import traceback
-from asyncio import AbstractEventLoop
+from asyncio import AbstractEventLoop, CancelledError
 
 from prana_rc.entity import Speed
 from prana_rc.service import PranaDeviceManager
@@ -74,6 +74,9 @@ class CliExtension(object):
                 device = await self.device_manager.connect(args.device, args.timeout, attempts=1)
                 CLI.print_info("   Connected")
                 return device
+            except CancelledError as e:
+                CLI.print_info("Connect to device routine interrupted")
+                raise e
             except Exception as e:
                 attempts_left -= 1
                 attempt_number += 1

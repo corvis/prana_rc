@@ -26,7 +26,7 @@ from typing import Dict, List, Union, Optional
 
 
 class PranaDeviceManager(object):
-    PRANA_DEVICE_NAME_PREFIX = 'PRNAQaq'
+    PRANA_DEVICE_NAME_PREFIXES = ['PRNAQaq', 'PRANA']
 
     def __init__(self, iface: str = 'hci0', loop: Optional[AbstractEventLoop] = None) -> None:
         self.__ble_interface = iface
@@ -36,11 +36,17 @@ class PranaDeviceManager(object):
 
     @classmethod
     def __is_prana_device(cls, dev: "bleak.backends.device.BLEDevice"):
-        return dev.name and dev.name.startswith(cls.PRANA_DEVICE_NAME_PREFIX)
+        return dev.name and len(list(filter(dev.name.startswith, cls.PRANA_DEVICE_NAME_PREFIXES))) > 0
 
     @classmethod
     def __prana_dev_name_2_name(cls, dev_name: str):
-        return dev_name.replace(cls.PRANA_DEVICE_NAME_PREFIX, '').strip() if dev_name else dev_name
+        name = dev_name
+        if dev_name:
+            for prefix in cls.PRANA_DEVICE_NAME_PREFIXES:
+                if dev_name.startswith(prefix):
+                    name = dev_name.replace(prefix, '', 1)
+                    break
+        return name.strip()
 
     @classmethod
     def __addr_for_target(cls, target: Union[str, PranaDeviceInfo]) -> str:

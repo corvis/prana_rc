@@ -1,4 +1,4 @@
-bleak>=0.6.1
+bleak>=0.7.1
 service_identity>=18.0.0
 
 # Development dependencies

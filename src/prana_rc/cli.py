@@ -17,11 +17,15 @@
 import argparse
 import asyncio
 import logging
+import signal
+from asyncio import CancelledError
 from typing import Type
 
 from prana_rc.cli_utils import CliExtension, register_global_arguments, CLI, parse_bool_val, parse_speed_str
 from prana_rc.entity import Speed, Mode
 from prana_rc.service import PranaDeviceManager
+
+SHUTDOWN_SIGNALS = (signal.SIGHUP, signal.SIGTERM, signal.SIGINT)
 
 supplementary_parser = argparse.ArgumentParser(add_help=False)
 register_global_arguments(supplementary_parser)
@@ -39,7 +43,7 @@ under certain conditions;
                                  )
 register_global_arguments(parser)
 command_parser = parser.add_subparsers(title="command",
-                                       dest="cmd", required=True,
+                                       dest="cmd",
                                        description='Use \"<command> -h\" to get information '
                                                    'about particular command')
 
@@ -133,10 +137,22 @@ def configure_subparser_for_cli_extension(ext: Type[CliExtension], parser: argpa
 async def handle_wrapper(device_manager: PranaDeviceManager, args):
     try:
         await args.handler.handle(args)
+    except CancelledError as e:
+        pass
     except Exception as e:
         CLI.print_error(e)
-    finally:
-        await device_manager.disconnect_all()
+
+
+async def on_shutdown(signal, loop, device_manager: PranaDeviceManager):
+    CLI.print_error(f"Received exit signal {signal.name}...")
+    tasks = [t for t in asyncio.all_tasks() if t is not
+             asyncio.current_task()]
+
+    [task.cancel() for task in tasks]
+    await asyncio.gather(*tasks)
+    await device_manager.disconnect_all()
+
+    # loop.stop()
 
 
 def run_cli():
@@ -155,7 +171,14 @@ def run_cli():
 
     args = parser.parse_args()
     if hasattr(args, "handler"):
-        loop.run_until_complete(asyncio.ensure_future(handle_wrapper(device_manager, args)))
+        # Register on shutdown callback
+        for s in SHUTDOWN_SIGNALS:
+            loop.add_signal_handler(s, lambda s=s: asyncio.create_task(on_shutdown(s, loop, device_manager)))
+        # Run main login
+        try:
+            loop.run_until_complete(asyncio.ensure_future(handle_wrapper(device_manager, args)))
+        except KeyboardInterrupt:
+            CLI.print_error("Process interrupted. Closing connections.")
 
 
 if __name__ == "__main__":
