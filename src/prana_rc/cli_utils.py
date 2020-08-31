@@ -57,13 +57,18 @@ class CLI:
             print('[DEBUG] ' + string_to_print, file=sys.stderr)
 
     @classmethod
-    def print_state(cls, state: PranaState, output_format: OutputFormat = None):
-        if output_format is None:
-            output_format = OutputFormat.TEXT
+    def print_state(cls, state: PranaState, output_format: OutputFormat = OutputFormat.TEXT):
         if output_format == OutputFormat.TEXT:
             cls.print_data(str(state))
         elif output_format == OutputFormat.JSON:
             cls.print_data(json.dumps(state.to_dict()))
+
+    @classmethod
+    def print_version(cls, version_obj: dict, output_format: OutputFormat = OutputFormat.TEXT):
+        if output_format == OutputFormat.TEXT:
+            cls.print_data(str(version_obj.get('version')))
+        elif output_format == OutputFormat.JSON:
+            cls.print_data(json.dumps(version_obj))
 
 
 class CliExtension(object):

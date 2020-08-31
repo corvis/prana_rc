@@ -21,10 +21,13 @@ import signal
 from asyncio import CancelledError
 from typing import Type
 
-from prana_rc.cli_utils import CliExtension, register_global_arguments, CLI, parse_bool_val, parse_speed_str
+from prana_rc.cli_utils import CliExtension, register_global_arguments, CLI, parse_bool_val, parse_speed_str, \
+    OutputFormat
 from prana_rc.entity import Mode
 from prana_rc.service import PranaDeviceManager
+import prana_rc.__version__
 
+PRANA_RC_VERSION = prana_rc.__version__.__version__
 SHUTDOWN_SIGNALS = (signal.SIGHUP, signal.SIGTERM, signal.SIGINT)
 
 supplementary_parser = argparse.ArgumentParser(add_help=False)
@@ -33,13 +36,14 @@ register_global_arguments(supplementary_parser)
 parser = argparse.ArgumentParser(prog='prana', add_help=True,
                                  description='CLI interface to manage Prana recuperators via BLE',
                                  formatter_class=argparse.RawDescriptionHelpFormatter, epilog="""
+Version: {version}
 --------------------------------------------------------------
 Prana RC CLI Copyright (C) 2020 Dmitry Berezovsky
 This program comes with ABSOLUTELY NO WARRANTY;
 This is free software, and you are welcome to redistribute it
 under certain conditions;
 --------------------------------------------------------------
-"""
+""".format(version=PRANA_RC_VERSION)
                                  )
 register_global_arguments(parser)
 command_parser = parser.add_subparsers(title="command",
@@ -63,6 +67,15 @@ class DiscoveryCLIExtension(CliExtension):
             for dev in devs:
                 CLI.print_info(
                     "{} [{}] (identity: {}, rssi: {})".format(dev.name, dev.address, dev.bt_device_name, dev.rssi))
+
+
+class VersionCLIExtension(CliExtension):
+    COMMAND_NAME = 'version'
+    COMMAND_DESCRIPTION = 'Print version and exit'
+
+    async def handle(self, args):
+        version_obj = dict(version=PRANA_RC_VERSION)
+        CLI.print_version(version_obj, args.format)
 
 
 class ReadStateCLIExtension(CliExtension):
@@ -157,7 +170,7 @@ async def on_shutdown(signal, loop, device_manager: PranaDeviceManager):
 
 def run_cli():
     # logging.basicConfig(level=logging.ERROR)
-    root_commands = (DiscoveryCLIExtension, SetCLIExtension, ReadStateCLIExtension)
+    root_commands = (DiscoveryCLIExtension, SetCLIExtension, ReadStateCLIExtension, VersionCLIExtension)
     global_args = read_global_args()
     CLI.verbose_mode = global_args.verbose
 
