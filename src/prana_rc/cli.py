@@ -22,7 +22,7 @@ from asyncio import CancelledError
 from typing import Type
 
 from prana_rc.cli_utils import CliExtension, register_global_arguments, CLI, parse_bool_val, parse_speed_str
-from prana_rc.entity import Speed, Mode
+from prana_rc.entity import Mode
 from prana_rc.service import PranaDeviceManager
 
 SHUTDOWN_SIGNALS = (signal.SIGHUP, signal.SIGTERM, signal.SIGINT)
@@ -72,7 +72,7 @@ class ReadStateCLIExtension(CliExtension):
     async def handle(self, args):
         device = await self.connect_to_device(args)
         state = await device.read_state()
-        CLI.print_info(str(state))
+        CLI.print_state(state, args.format)
 
 
 class SetCLIExtension(CliExtension):
@@ -117,7 +117,7 @@ class SetCLIExtension(CliExtension):
         # At the end let's print the new state
         state = await device.read_state()
         CLI.print_info("Recent device status:")
-        CLI.print_info(str(state))
+        CLI.print_state(state, args.format)
 
 
 # =========== END OF COMMAND DEFINITIONS ==============

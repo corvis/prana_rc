@@ -15,12 +15,22 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
+import json
 import sys
 import traceback
 from asyncio import AbstractEventLoop, CancelledError
+from enum import Enum
 
-from prana_rc.entity import Speed
+from prana_rc.entity import Speed, PranaState
 from prana_rc.service import PranaDeviceManager
+
+
+class OutputFormat(Enum):
+    TEXT = 'text'
+    JSON = 'json'
+
+    def __str__(self):
+        return self.value
 
 
 class CLI:
@@ -45,6 +55,15 @@ class CLI:
     def print_debug(cls, string_to_print):
         if cls.verbose_mode:
             print('[DEBUG] ' + string_to_print, file=sys.stderr)
+
+    @classmethod
+    def print_state(cls, state: PranaState, output_format: OutputFormat = None):
+        if output_format is None:
+            output_format = OutputFormat.TEXT
+        if output_format == OutputFormat.TEXT:
+            cls.print_data(str(state))
+        elif output_format == OutputFormat.JSON:
+            cls.print_data(json.dumps(state.to_dict()))
 
 
 class CliExtension(object):
@@ -111,6 +130,9 @@ def register_global_arguments(parser: argparse.ArgumentParser):
     parser.add_argument("-t", "--timeout", dest="timeout", action='store', required=False, type=int,
                         help="Time in seconds to wait for device",
                         default=3)
+    parser.add_argument("-f", "--format", dest="format", action='store', required=False, type=OutputFormat,
+                        choices=list(OutputFormat), default=OutputFormat.TEXT,
+                        help="Output format, e.g. text, json, etc.")
 
 
 def parse_bool_val(v: str) -> bool:

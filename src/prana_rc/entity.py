@@ -97,3 +97,20 @@ class PranaState(object):
             'RUNNING' if self.is_on else 'IDLE',
             self.speed, self.winter_mode_enabled, self.mini_heating_enabled, self.flows_locked
         )
+
+    def to_dict(self):
+        return dict(
+            speed_locked=self.speed_locked,
+            speed_in=self.speed_in,
+            speed_out=self.speed_out,
+            night_mode=self.night_mode,
+            auto_mode=self.auto_mode,
+            flows_locked=self.flows_locked,
+            is_on=self.is_on,
+            mini_heating_enabled=self.mini_heating_enabled,
+            winter_mode_enabled=self.winter_mode_enabled,
+            is_input_fan_on=self.is_input_fan_on,
+            is_output_fan_on=self.is_output_fan_on,
+            timestamp=self.timestamp,
+            speed=self.speed,
+        )
