@@ -1,6 +1,6 @@
 # Prana RC 
 
-![Prana device picture](https://github.com/corvis/prana_rc/blob/master/prana_pic.jpg?raw=true"Prana device picture")
+![Prana device picture](https://github.com/corvis/prana_rc/blob/master/prana_pic.jpg?raw=true "Prana device picture")
 
 **DISCLAIMER: This library is under active development now. There are no any stable release yet, so please do not 
 use it in your installation unless you are developer who would like to contribute into module**
@@ -17,7 +17,11 @@ closed proprietary protocol. Used it on your own risk.
 
 Device running this software must be equipped with bluetooth 4.0+ module so it support BLE. 
 This module relies on [Bleak](https://github.com/hbldh/bleak) library so there is a chance it might work on 
-Win, Mac and Linux. However **it was tested exclusively on Linux**.
+Win, Mac and Linux. However it was tested only on:
+
+* Linux (x64): Fedora, Debian
+* Raspbery PI: Raspbian
+* Mac: Catalina 
 
 Most likely it is compatible with Prana 150,200G, and Eco Energy series (with limited feature set). 
 But confirmed list of models which were verified to work fine is below:
