@@ -21,7 +21,7 @@ Win, Mac and Linux. However it was tested only on:
 
 * Linux (x64): Fedora, Debian
 * Raspbery PI: Raspbian
-* Mac: Mojave 
+* Mac: Catalina 
 
 Most likely it is compatible with Prana 150,200G, and Eco Energy series (with limited feature set). 
 But confirmed list of models which were verified to work fine is below:
