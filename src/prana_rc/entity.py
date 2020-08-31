@@ -111,6 +111,6 @@ class PranaState(object):
             winter_mode_enabled=self.winter_mode_enabled,
             is_input_fan_on=self.is_input_fan_on,
             is_output_fan_on=self.is_output_fan_on,
-            timestamp=self.timestamp,
+            timestamp=self.timestamp.isoformat(),
             speed=self.speed,
         )
