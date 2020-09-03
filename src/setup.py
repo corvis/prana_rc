@@ -61,7 +61,8 @@ setup(
 
         # Who your project is intended for
         'Intended Audience :: Developers',
-        'Topic :: Software Development :: Build Tools',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: Home Automation',
 
         # License (should match "license" above)
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',

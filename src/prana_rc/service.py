@@ -153,6 +153,7 @@ class PranaDevice(object):
         await self.__client.connect(timeout=timeout)
         self.__has_connect_attempts = True
         await self.__client.start_notify(self.CONTROL_RW_CHARACTERISTIC_UUID, self.notification_handler)
+        # TODO: shall we subscribe for disconnect callback and change status?
         # TODO: Verify prana service exists to ensure it is prana device
 
     async def disconnect(self):

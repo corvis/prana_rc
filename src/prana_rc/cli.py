@@ -16,10 +16,13 @@
 
 import argparse
 import asyncio
+import importlib
+import inspect
 import logging
+import pkgutil
 import signal
 from asyncio import CancelledError
-from typing import Type
+from typing import Type, List
 
 from prana_rc.cli_utils import CliExtension, register_global_arguments, CLI, parse_bool_val, parse_speed_str, \
     OutputFormat
@@ -168,9 +171,34 @@ async def on_shutdown(signal, loop, device_manager: PranaDeviceManager):
     # loop.stop()
 
 
+def discover_cli_extensions(target_package_name: str) -> List[Type]:
+    extensions = []
+    target_package = importlib.import_module(target_package_name)
+    for loader, pkg_name, is_pkg in pkgutil.walk_packages(target_package.__path__):
+        # Check if we've got a valid extension package
+        if is_pkg:
+            full_name = '.'.join((target_package.__name__, pkg_name))
+            try:
+                candidate_pkg = importlib.import_module(full_name)
+                if hasattr(candidate_pkg, 'is_available'):
+                    if not candidate_pkg.is_available():
+                        continue  # Package is not supported
+                    cli_module = importlib.import_module('.cli', full_name)
+                    found_extensions = inspect.getmembers(cli_module,
+                                                          lambda member: inspect.isclass(member)
+                                                                         and member.__name__ != CliExtension.__name__
+                                                                         and issubclass(member, CliExtension))
+                    extensions += [cls for name, cls in found_extensions]
+            except ImportError:
+                pass
+    return extensions
+
+
 def run_cli():
     # logging.basicConfig(level=logging.ERROR)
-    root_commands = (DiscoveryCLIExtension, SetCLIExtension, ReadStateCLIExtension, VersionCLIExtension)
+    root_commands = [DiscoveryCLIExtension, SetCLIExtension, ReadStateCLIExtension, VersionCLIExtension]
+    # Extra commands
+    root_commands += discover_cli_extensions('prana_rc.contrib')
     global_args = read_global_args()
     CLI.verbose_mode = global_args.verbose
 

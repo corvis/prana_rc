@@ -16,7 +16,7 @@
 
 import datetime
 from enum import Enum
-from typing import NamedTuple, List
+from typing import NamedTuple, List, Optional
 
 
 class Speed(Enum):
@@ -114,3 +114,23 @@ class PranaState(object):
             timestamp=self.timestamp.isoformat(),
             speed=self.speed,
         )
+
+
+class ToApiDict(object):
+
+    @classmethod
+    def prana_device_info(cls, obj: Optional[PranaDeviceInfo]) -> Optional[dict]:
+        if obj is None:
+            return None
+        return dict(
+            address=obj.address,
+            bt_device_name=obj.address,
+            name=obj.name,
+            rssi=obj.name
+        )
+
+    @classmethod
+    def prana_state(cls, obj: Optional[PranaState]) -> Optional[dict]:
+        if obj is None:
+            return None
+        return obj.to_dict()

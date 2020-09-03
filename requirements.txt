@@ -1,6 +1,12 @@
 bleak>=0.7.1
 service_identity>=18.0.0
 
+
+# API packages
+pydantic>=1.6
+# Package tornado
+ws-sizzle[tornado]>=0.0.2
+
 # Development dependencies
 copyright==1.0.1.0
 twine==1.13.0
