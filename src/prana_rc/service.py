@@ -21,7 +21,7 @@ import logging
 import bleak
 
 from prana_rc.entity import PranaState, PranaDeviceInfo, Speed
-from asyncio import AbstractEventLoop
+from asyncio import AbstractEventLoop, Lock
 from typing import Dict, List, Union, Optional
 
 
@@ -33,6 +33,7 @@ class PranaDeviceManager(object):
         self.__loop = loop
         self.__logger = logging.getLogger(self.__class__.__name__)
         self.__managed_devices = {}  # type: Dict['str', PranaDevice]
+        self.__lock = Lock()
 
     @classmethod
     def __is_prana_device(cls, dev: "bleak.backends.device.BLEDevice"):
@@ -65,7 +66,8 @@ class PranaDeviceManager(object):
         :param timeout: time to wait for devices in seconds
         :return: list of discovered devices
         """
-        discovered_devs = await bleak.discover(timeout, self.__loop)
+        async with self.__lock:
+            discovered_devs = await bleak.discover(timeout, self.__loop)
         return list(map(lambda dev: PranaDeviceInfo(address=dev.address, bt_device_name=(dev.name or '').strip(),
                                                     name=self.__prana_dev_name_2_name(dev.name), rssi=dev.rssi),
                         filter(PranaDeviceManager.__is_prana_device, discovered_devs)
@@ -136,6 +138,7 @@ class PranaDevice(object):
         self.__notification_bytes = None  # type: bytearray
         self.__state = None  # type: PranaState
         self.__read_state_event = None  # type: asyncio.Event
+        self.__lock = Lock()
 
     async def __verify_connected(self):
         if not await self.is_connected():
@@ -149,15 +152,17 @@ class PranaDevice(object):
             self.__read_state_event.set()
 
     async def connect(self, timeout: float = 2):
-        # if not await self.is_connected():
-        await self.__client.connect(timeout=timeout)
-        self.__has_connect_attempts = True
-        await self.__client.start_notify(self.CONTROL_RW_CHARACTERISTIC_UUID, self.notification_handler)
-        # TODO: shall we subscribe for disconnect callback and change status?
-        # TODO: Verify prana service exists to ensure it is prana device
+        async with self.__lock:
+            # if not await self.is_connected():
+            await self.__client.connect(timeout=timeout)
+            self.__has_connect_attempts = True
+            await self.__client.start_notify(self.CONTROL_RW_CHARACTERISTIC_UUID, self.notification_handler)
+            # TODO: shall we subscribe for disconnect callback and change status?
+            # TODO: Verify prana service exists to ensure it is prana device
 
     async def disconnect(self):
-        await self.__client.disconnect()
+        async with self.__lock:
+            await self.__client.disconnect()
 
     async def is_connected(self):
         if not self.__has_connect_attempts:
@@ -165,17 +170,18 @@ class PranaDevice(object):
         return await self.__client.is_connected()
 
     async def _send_command(self, command: bytearray, expect_reply=False):
-        # Invalidate state
-        self.__state = None
-        await self.__client.write_gatt_char(self.CONTROL_RW_CHARACTERISTIC_UUID, command, response=expect_reply)
-        if expect_reply:
-            self.__read_state_event = asyncio.Event()
-            await asyncio.wait_for(self.__wait_for_read_event(), timeout=1)
-            return self.__notification_bytes
-        # await asyncio.sleep(0.6)
-        # result = await self.__client.read_gatt_char(self.CONTROL_RW_CHARACTERISTIC_UUID, use_cached=False)
-        # if expect_reply:
-        #     return result
+        async with self.__lock:
+            # Invalidate state
+            self.__state = None
+            await self.__client.write_gatt_char(self.CONTROL_RW_CHARACTERISTIC_UUID, command, response=expect_reply)
+            if expect_reply:
+                self.__read_state_event = asyncio.Event()
+                await asyncio.wait_for(self.__wait_for_read_event(), timeout=1)
+                return self.__notification_bytes
+            # await asyncio.sleep(0.6)
+            # result = await self.__client.read_gatt_char(self.CONTROL_RW_CHARACTERISTIC_UUID, use_cached=False)
+            # if expect_reply:
+            #     return result
 
     async def set_high_speed(self):
         await self.__verify_connected()

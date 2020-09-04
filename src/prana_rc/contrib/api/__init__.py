@@ -1,9 +1,10 @@
-from asyncio import AbstractEventLoop
+from asyncio import AbstractEventLoop, Lock
 
 from jsonrpc import Dispatcher
+from pydantic import validate_arguments
 from sizzlews.server.annotation import rpc_method
 from sizzlews.server.common import MethodDiscoveryMixin, SizzleWSHandler
-from typing import List, Dict
+from typing import List, Dict, NamedTuple
 
 from prana_rc.contrib.api.dto import SetStateDTO
 from prana_rc.entity import PranaDeviceInfo, ToApiDict
@@ -21,26 +22,25 @@ class PranaRCApiHandler(MethodDiscoveryMixin, SizzleWSHandler):
                  expose_ping_api=True) -> None:
         super().__init__(dispatcher, expose_version_api, expose_ping_api)
         self.__device_manager = device_manager
-        self.__devices_pool = {}  # type: Dict[str, PranaDevice]
+        # self.__devices_pool = {}  # type: Dict[str, PranaDevice]
         self.__loop = loop
-
-    # TODO: Locks!
 
     async def get_connected_prana_device(self, device_addr: str, timeout=DEFAULT_TIMEOUT,
                                          attempts=DEFAULT_ATTEMPTS) -> PranaDevice:
-        prana_device = self.__devices_pool.get(device_addr, None)  # type: PranaDevice
-        if prana_device is None:
-            prana_device = await self.__device_manager.connect(device_addr, timeout, attempts)
-            self.__devices_pool[device_addr] = prana_device
-        if prana_device.is_connected():
-            return prana_device
-        else:
-            try:
-                prana_device.connect(timeout)
-            except:
-                # TODO: logger - connection seems to be already dead. Reconnecting
-                del self.__devices_pool[device_addr]
-                return await self.get_connected_prana_device(device_addr, timeout, attempts)
+        prana_device = await self.__device_manager.connect(device_addr, timeout, attempts)
+        # prana_device = self.__devices_pool.get(device_addr, None)  # type: PranaDevice
+        # if prana_device is None:
+        #     prana_device = await self.__device_manager.connect(device_addr, timeout, attempts)
+        #     self.__devices_pool[device_addr] = prana_device
+        # if prana_device.is_connected():
+        #     return prana_device
+        # else:
+        #     try:
+        #         prana_device.connect(timeout)
+        #     except:
+        #         # TODO: logger - connection seems to be already dead. Reconnecting
+        #         del self.__devices_pool[device_addr]
+        #         return await self.get_connected_prana_device(device_addr, timeout, attempts)
         return prana_device
 
     @rpc_method
@@ -56,8 +56,9 @@ class PranaRCApiHandler(MethodDiscoveryMixin, SizzleWSHandler):
         return ToApiDict.prana_state(state)
 
     @rpc_method
-    async def set_state(self, address: str, state: dict, timeout=DEFAULT_TIMEOUT, attempts=DEFAULT_ATTEMPTS) -> dict:
-        state = SetStateDTO(**state)
+    @validate_arguments
+    async def set_state(self, address: str, state: SetStateDTO, timeout=DEFAULT_TIMEOUT,
+                        attempts=DEFAULT_ATTEMPTS) -> dict:
         features = [state.speed, state.mode, state.winter_mode, state.heating]
         if all(v is None for v in features):
             raise ValueError("At least one parameter must be set. Check your arguments.")

@@ -5,7 +5,7 @@ service_identity>=18.0.0
 # API packages
 pydantic>=1.6
 # Package tornado
-ws-sizzle[tornado]>=0.0.2
+ws-sizzle[tornado]>=0.0.3
 
 # Development dependencies
 copyright==1.0.1.0
