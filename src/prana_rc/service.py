@@ -139,6 +139,7 @@ class PranaDevice(object):
         self.__state = None  # type: PranaState
         self.__read_state_event = None  # type: asyncio.Event
         self.__lock = Lock()
+        self.__logger = logging.getLogger(self.__class__.__name__)
 
     async def __verify_connected(self):
         if not await self.is_connected():
@@ -153,12 +154,12 @@ class PranaDevice(object):
 
     async def connect(self, timeout: float = 2):
         async with self.__lock:
-            # if not await self.is_connected():
-            await self.__client.connect(timeout=timeout)
-            self.__has_connect_attempts = True
-            await self.__client.start_notify(self.CONTROL_RW_CHARACTERISTIC_UUID, self.notification_handler)
-            # TODO: shall we subscribe for disconnect callback and change status?
-            # TODO: Verify prana service exists to ensure it is prana device
+            if not await self.is_connected():
+                await self.__client.connect(timeout=timeout)
+                self.__has_connect_attempts = True
+                await self.__client.start_notify(self.CONTROL_RW_CHARACTERISTIC_UUID, self.notification_handler)
+                # TODO: shall we subscribe for disconnect callback and change status?
+                # TODO: Verify prana service exists to ensure it is prana device
 
     async def disconnect(self):
         async with self.__lock:
@@ -167,7 +168,11 @@ class PranaDevice(object):
     async def is_connected(self):
         if not self.__has_connect_attempts:
             return False
-        return await self.__client.is_connected()
+        try:
+            return await self.__client.is_connected()
+        except:
+            self.__logger.error("Failed to verify connection status")
+            return False
 
     async def _send_command(self, command: bytearray, expect_reply=False):
         async with self.__lock:

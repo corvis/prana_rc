@@ -111,7 +111,7 @@ class PranaState(object):
             winter_mode_enabled=self.winter_mode_enabled,
             is_input_fan_on=self.is_input_fan_on,
             is_output_fan_on=self.is_output_fan_on,
-            timestamp=self.timestamp.isoformat(),
+            timestamp=self.timestamp.isoformat() if self.timestamp is not None else None,
             speed=self.speed,
         )
 
@@ -124,9 +124,9 @@ class ToApiDict(object):
             return None
         return dict(
             address=obj.address,
-            bt_device_name=obj.address,
+            bt_device_name=obj.bt_device_name,
             name=obj.name,
-            rssi=obj.name
+            rssi=obj.rssi
         )
 
     @classmethod

@@ -7,7 +7,7 @@ from sizzlews.server.common import MethodDiscoveryMixin, SizzleWSHandler
 from typing import List, Dict, NamedTuple
 
 from prana_rc.contrib.api.dto import SetStateDTO
-from prana_rc.entity import PranaDeviceInfo, ToApiDict
+from prana_rc.entity import PranaDeviceInfo, ToApiDict, Mode
 from prana_rc.service import PranaDeviceManager, PranaDevice
 
 DEFAULT_TIMEOUT = 5
@@ -65,8 +65,16 @@ class PranaRCApiHandler(MethodDiscoveryMixin, SizzleWSHandler):
         prana_device = await self.get_connected_prana_device(address, timeout, attempts)
         if state.speed is not None:
             await prana_device.set_speed(state.speed)
-
-        # TODO: Apply the rest
-
+        if state.heating is not None:
+            await prana_device.set_heating(state.heating)
+        if state.winter_mode is not None:
+            await prana_device.set_winter_mode(state.winter_mode)
+        if state.mode is not None:
+            if state.mode == Mode.NIGHT:
+                await prana_device.set_night_mode()
+            elif state.mode == Mode.NORMAL:
+                await prana_device.set_normal_speed()
+            elif state.mode == Mode.HIGH:
+                await prana_device.set_high_speed()
         state = await prana_device.read_state()
         return ToApiDict.prana_state(state)
