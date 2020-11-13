@@ -66,3 +66,10 @@ publish:
        twine upload -r pypi dist/*; \
        echo "DONE: Publish"; \
     )
+
+set-version:
+	@( \
+		if [ -z $(VERSION) ]; then echo "Missing VERSION argument"; exit 1; fi; \
+		echo '__version__ = "$(VERSION)"' > ./src/prana_rc/__version__.py; \
+		echo "Version updated: $(VERSION)"; \
+	)
