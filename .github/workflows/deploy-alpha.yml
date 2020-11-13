@@ -29,7 +29,7 @@ jobs:
       run: make NO_VENV=True
 
     - name: Build test packages
-      run: make build NO_VENV=True ALPHA_VERSION=`date +%Y%m%d.%H%M`
+      run: make build NO_VENV=True ALPHA_VERSION=`TZ="Europe/Kiev" date +%Y%m%d.%H%M`
 
     - name: Publish packages
       run: make publish NO_VENV=True PYPI_REPOSITORY_URL=https://test.pypi.org/legacy/ PYPI_API_KEY=${{ secrets.pypi_test_password }}
