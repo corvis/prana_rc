@@ -14,9 +14,13 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import fnmatch
 import os
 from os import path
+
 from setuptools import setup, find_packages
+from setuptools.command.build_py import build_py as build_py_orig
+
 import prana_rc.__version__
 
 src_dir = path.abspath(path.dirname(__file__))
@@ -30,6 +34,7 @@ else:
     print("Using overridden version: " + version_override)
     version = version_override
 
+
 # Get the long description from the README file
 readme_file = path.join(root_dir, 'README.md')
 try:
@@ -41,8 +46,27 @@ except ImportError:
     with open(readme_file) as f:
         long_description = f.read()
 
+included = [
+    'prana_rc/__init__.py',
+    'prana_rc/__version__.py',
+    'prana_rc/contrib/__init__.py',
+    'prana_rc/contrib/client/*.py',
+    'prana_rc/contrib/api/*.py'
+]
+
+
+class build_py(build_py_orig):
+    def find_package_modules(self, package, package_dir):
+        modules = super().find_package_modules(package, package_dir)
+        return [
+            (pkg, mod, file)
+            for (pkg, mod, file) in modules
+            if any(fnmatch.fnmatchcase(file, pat=pattern) for pattern in included)
+        ]
+
+
 setup(
-    name='prana_rc',
+    name='prana_rc.client',
     # Semantic versioning should be used:
     # https://packaging.python.org/distributing/?highlight=entry_points#semantic-versioning-preferred
     version=version,
@@ -80,32 +104,20 @@ setup(
 
     # Structure
     packages=find_packages(include=['prana_rc', 'prana_rc.*']),
-    # py_modules=["app", 'cli', 'daemonize'],
 
     install_requires=[
-        'bleak>=0.7.1',
-        'typing>=3.6',
-        'service_identity>=18.0.0',
+        'ws-sizzle[aiohttp]>=0.0.4'
     ],
 
     # Extra dependencies might be installed with:
     # pip install -e .[dev,test]
     extras_require={
-        'server-tornado': ['ws-sizzle[tornado]>=0.0.4'],
-        'client-aio': ['ws-sizzle[aiohttp]>=0.0.4'],
     },
 
     package_data={
         # 'examples': [path.join(root_dir, 'examples')],
     },
+    cmdclass={'build_py': build_py},
 
-    # test_suite='nose2.collector.collector',
-    # tests_require=[
-    #     'nose2==0.8.0',
-    # ],
-    entry_points={
-        'console_scripts': [
-            'prana=prana_rc.cli:run_cli',
-        ],
-    }
+    script_name='client_setup.py'
 )

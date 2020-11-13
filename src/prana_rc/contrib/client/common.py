@@ -14,26 +14,26 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import abc
-
+from sizzlews.client.common import SizzleWsAsyncClient
 from typing import List
 
-from prana_rc.contrib.api.dto import SetStateDTO, PranaDeviceInfoDTO, PranaStateDTO
+from prana_rc.contrib.api import (
+    PranaRCAsyncFacade,
+    SetStateDTO,
+    DEFAULT_TIMEOUT,
+    DEFAULT_ATTEMPTS,
+    PranaStateDTO,
+    PranaDeviceInfoDTO,
+)
 
-DEFAULT_TIMEOUT = 5
-DEFAULT_ATTEMPTS = 5
 
-
-class PranaRCAsyncFacade(abc.ABC):
-    @abc.abstractmethod
+class PranaRCAsyncClient(SizzleWsAsyncClient, PranaRCAsyncFacade):
     async def discover(self, timeout=DEFAULT_TIMEOUT) -> List[PranaDeviceInfoDTO]:
-        pass
+        return await self.async_invoke("prana.discover", timeout)
 
-    @abc.abstractmethod
     async def get_state(self, address: str, timeout=DEFAULT_TIMEOUT, attempts=DEFAULT_ATTEMPTS) -> PranaStateDTO:
-        pass
+        return await self.async_invoke("prana.get_state", address, timeout, attempts)
 
-    @abc.abstractmethod
     async def set_state(
         self,
         address: str,
@@ -41,4 +41,4 @@ class PranaRCAsyncFacade(abc.ABC):
         timeout=DEFAULT_TIMEOUT,
         attempts=DEFAULT_ATTEMPTS,
     ) -> PranaStateDTO:
-        pass
+        return await self.async_invoke("prana.set_state", address, state.dict(), timeout)

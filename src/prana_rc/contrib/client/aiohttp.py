@@ -14,4 +14,9 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-__version__ = "0.2.3"
+from sizzlews.client.aiohttp import SizzleWsAIOClient
+from prana_rc.contrib.client.common import PranaRCAsyncClient
+
+
+class PranaRCAioHttpClient(PranaRCAsyncClient, SizzleWsAIOClient):
+    pass

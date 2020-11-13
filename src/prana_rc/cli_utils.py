@@ -1,16 +1,16 @@
 #    Prana RC
 #    Copyright (C) 2020 Dmitry Berezovsky
-#    
+#
 #    prana is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
-#    
+#
 #    prana is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
-#    
+#
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -26,8 +26,8 @@ from prana_rc.service import PranaDeviceManager
 
 
 class OutputFormat(Enum):
-    TEXT = 'text'
-    JSON = 'json'
+    TEXT = "text"
+    JSON = "json"
 
     def __str__(self):
         return self.value
@@ -48,13 +48,13 @@ class CLI:
     def print_error(cls, exception):
         print(" -> ERROR: " + str(exception), file=sys.stderr)
         if cls.verbose_mode:
-            print('--------------')
+            print("--------------")
             traceback.print_exc(file=sys.stderr)
 
     @classmethod
     def print_debug(cls, string_to_print):
         if cls.verbose_mode:
-            print('[DEBUG] ' + string_to_print, file=sys.stderr)
+            print("[DEBUG] " + string_to_print, file=sys.stderr)
 
     @classmethod
     def print_state(cls, state: PranaState, output_format: OutputFormat = OutputFormat.TEXT):
@@ -66,7 +66,7 @@ class CLI:
     @classmethod
     def print_version(cls, version_obj: dict, output_format: OutputFormat = OutputFormat.TEXT):
         if output_format == OutputFormat.TEXT:
-            cls.print_data(str(version_obj.get('version')))
+            cls.print_data(str(version_obj.get("version")))
         elif output_format == OutputFormat.JSON:
             cls.print_data(json.dumps(version_obj))
 
@@ -75,10 +75,16 @@ class CliExtension(object):
     """
     Allows to extend CLI interface
     """
+
     COMMAND_NAME = None
     COMMAND_DESCRIPTION = None
 
-    def __init__(self, parser: argparse.ArgumentParser, device_manager: PranaDeviceManager, loop: AbstractEventLoop):
+    def __init__(
+        self,
+        parser: argparse.ArgumentParser,
+        device_manager: PranaDeviceManager,
+        loop: AbstractEventLoop,
+    ):
         super().__init__()
         self.parser = parser
         self.__devce_manager = device_manager
@@ -124,31 +130,66 @@ class CliExtension(object):
 
 
 def register_global_arguments(parser: argparse.ArgumentParser):
-    parser.add_argument("-v", "--verbose", dest="verbose", action='store_true', required=False,
-                        help="If set more verbose output will used",
-                        default=False)
-    parser.add_argument("-i", "--iface", dest="iface", action='store', required=False, type=str,
-                        help="Bluetooth interface to be used",
-                        default='hci0')
-    parser.add_argument("-d", "--device", dest="device", action='store', required=False, type=str,
-                        help="Mac address of the prana device to connect to device. Required for the most of commands")
-    parser.add_argument("-t", "--timeout", dest="timeout", action='store', required=False, type=int,
-                        help="Time in seconds to wait for device",
-                        default=3)
-    parser.add_argument("-f", "--format", dest="format", action='store', required=False, type=OutputFormat,
-                        choices=list(OutputFormat), default=OutputFormat.TEXT,
-                        help="Output format, e.g. text, json, etc.")
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        dest="verbose",
+        action="store_true",
+        required=False,
+        help="If set more verbose output will used",
+        default=False,
+    )
+    parser.add_argument(
+        "-i",
+        "--iface",
+        dest="iface",
+        action="store",
+        required=False,
+        type=str,
+        help="Bluetooth interface to be used",
+        default="hci0",
+    )
+    parser.add_argument(
+        "-d",
+        "--device",
+        dest="device",
+        action="store",
+        required=False,
+        type=str,
+        help="Mac address of the prana device to connect to device. Required for the most of commands",
+    )
+    parser.add_argument(
+        "-t",
+        "--timeout",
+        dest="timeout",
+        action="store",
+        required=False,
+        type=int,
+        help="Time in seconds to wait for device",
+        default=3,
+    )
+    parser.add_argument(
+        "-f",
+        "--format",
+        dest="format",
+        action="store",
+        required=False,
+        type=OutputFormat,
+        choices=list(OutputFormat),
+        default=OutputFormat.TEXT,
+        help="Output format, e.g. text, json, etc.",
+    )
 
 
 def parse_bool_val(v: str) -> bool:
     if isinstance(v, bool):
         return v
-    if v.lower() in ('on', 'yes', 'true', 't', 'y', '1'):
+    if v.lower() in ("on", "yes", "true", "t", "y", "1"):
         return True
-    elif v.lower() in ('off', 'no', 'false', 'f', 'n', '0'):
+    elif v.lower() in ("off", "no", "false", "f", "n", "0"):
         return False
     else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
+        raise argparse.ArgumentTypeError("Boolean value expected.")
 
 
 def parse_speed_str(v: str) -> Speed:

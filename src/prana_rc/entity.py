@@ -1,21 +1,22 @@
 #    Prana RC
 #    Copyright (C) 2020 Dmitry Berezovsky
-#    
+#
 #    prana is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
-#    
+#
 #    prana is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
-#    
+#
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
 from enum import Enum
+
 from typing import NamedTuple, List, Optional
 
 
@@ -34,16 +35,16 @@ class Speed(Enum):
 
     @classmethod
     def all_options(self) -> List[str]:
-        return ['low', 'l', 'high', 'h', 'off', 'stop', 2, 3, 4, 5, 6, 7, 8, 9]
+        return ["low", "l", "high", "h", "off", "stop", 2, 3, 4, 5, 6, 7, 8, 9]
 
     @classmethod
     def from_str(cls, speed: str) -> "Speed":
         speed = str(speed).lower().strip()
-        if speed in ['low', 'l']:
+        if speed in ["low", "l"]:
             return cls.LOW
-        if speed in ['high', 'h']:
+        if speed in ["high", "h"]:
             return cls.HIGH
-        if speed in ['off', 'stop']:
+        if speed in ["off", "stop"]:
             return cls.OFF
         try:
             speed_int = int(speed)
@@ -51,16 +52,16 @@ class Speed(Enum):
                 return cls(speed_int)
         except ValueError:
             pass
-        raise ValueError('String {} is not valid speed identifier'.format(speed))
+        raise ValueError("String {} is not valid speed identifier".format(speed))
 
     def to_int(self) -> int:
         return int(self.value)
 
 
 class Mode(Enum):
-    NORMAL = 'normal'
-    NIGHT = 'night'
-    HIGH = 'high'
+    NORMAL = "normal"
+    NIGHT = "night"
+    HIGH = "high"
 
 
 class PranaDeviceInfo(NamedTuple):
@@ -71,7 +72,6 @@ class PranaDeviceInfo(NamedTuple):
 
 
 class PranaState(object):
-
     def __init__(self) -> None:
         self.speed_locked: int = None
         self.speed_in: int = None
@@ -94,8 +94,11 @@ class PranaState(object):
 
     def __repr__(self):
         return "Prana state: {}, Speed: {}, Winter Mode: {}, Heating: {}, Flows locked: {}".format(
-            'RUNNING' if self.is_on else 'IDLE',
-            self.speed, self.winter_mode_enabled, self.mini_heating_enabled, self.flows_locked
+            "RUNNING" if self.is_on else "IDLE",
+            self.speed,
+            self.winter_mode_enabled,
+            self.mini_heating_enabled,
+            self.flows_locked,
         )
 
     def to_dict(self):
@@ -111,13 +114,13 @@ class PranaState(object):
             winter_mode_enabled=self.winter_mode_enabled,
             is_input_fan_on=self.is_input_fan_on,
             is_output_fan_on=self.is_output_fan_on,
-            timestamp=self.timestamp.isoformat() if self.timestamp is not None else None,
+            timestamp=self.timestamp if self.timestamp is not None else None,
             speed=self.speed,
         )
 
 
+# TODO: Deprecated???
 class ToApiDict(object):
-
     @classmethod
     def prana_device_info(cls, obj: Optional[PranaDeviceInfo]) -> Optional[dict]:
         if obj is None:
@@ -126,7 +129,7 @@ class ToApiDict(object):
             address=obj.address,
             bt_device_name=obj.bt_device_name,
             name=obj.name,
-            rssi=obj.rssi
+            rssi=obj.rssi,
         )
 
     @classmethod

@@ -5,9 +5,12 @@ service_identity>=18.0.0
 # API packages
 pydantic>=1.6
 # Package tornado
-ws-sizzle[tornado]>=0.0.3
+ws-sizzle[tornado,aiohttp]>=0.0.4
 
 # Development dependencies
 copyright==1.0.1.0
 twine==1.13.0
 m2r==0.2.1
+flake8==3.8.4
+black>=18
+mypy>=0.7
