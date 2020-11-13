@@ -49,6 +49,15 @@ do
         bash -c "cd src && python ./$module sdist --dist-dir=../dist"
         echo "done"
         ;;
+        build-client)
+        module="client_setup.py"
+        echo "Applying copyright..."
+        ./development/copyright-update
+        echo "done"
+        echo "Building wheel package..."
+        bash -c "cd src && python ./$module bdist_wheel --dist-dir=../dist --bdist-dir=../../build"
+        echo "done"
+        ;;
         publish)
         echo "Uploading packages on PyPi"
         twine upload -r pypi dist/*
