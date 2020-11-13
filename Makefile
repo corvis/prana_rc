@@ -60,7 +60,7 @@ publish:
 	@( \
        set -e; \
        if [ -z $(SKIP_VENV) ]; then source $(VIRTUAL_ENV_PATH)/bin/activate; fi; \
-       if [ ! -z $(PYPI_API_KEY) ]; then export TWINE_USERNAME="pypi"; export TWINE_PASSWORD="$(PYPI_API_KEY)"; fi; \
+       if [ ! -z $(PYPI_API_KEY) ]; then export TWINE_USERNAME="__token__"; export TWINE_PASSWORD="$(PYPI_API_KEY)"; fi; \
        if [ ! -z $(PYPI_REPOSITORY_URL) ]; then  export TWINE_REPOSITORY_URL="$(PYPI_REPOSITORY_URL)"; fi; \
        echo "Uploading to PyPi"; \
        twine upload -r pypi dist/*; \
