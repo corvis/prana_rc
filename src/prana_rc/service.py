@@ -1,16 +1,16 @@
 #    Prana RC
 #    Copyright (C) 2020 Dmitry Berezovsky
-#    
+#
 #    prana is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
-#    
+#
 #    prana is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
-#    
+#
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -26,9 +26,9 @@ from typing import Dict, List, Union, Optional
 
 
 class PranaDeviceManager(object):
-    PRANA_DEVICE_NAME_PREFIXES = ['PRNAQaq', 'PRANA']
+    PRANA_DEVICE_NAME_PREFIXES = ["PRNAQaq", "PRANA"]
 
-    def __init__(self, iface: str = 'hci0', loop: Optional[AbstractEventLoop] = None) -> None:
+    def __init__(self, iface: str = "hci0", loop: Optional[AbstractEventLoop] = None) -> None:
         self.__ble_interface = iface
         self.__loop = loop
         self.__logger = logging.getLogger(self.__class__.__name__)
@@ -45,7 +45,7 @@ class PranaDeviceManager(object):
         if dev_name:
             for prefix in cls.PRANA_DEVICE_NAME_PREFIXES:
                 if dev_name.startswith(prefix):
-                    name = dev_name.replace(prefix, '', 1)
+                    name = dev_name.replace(prefix, "", 1)
                     break
         return name.strip()
 
@@ -56,8 +56,7 @@ class PranaDeviceManager(object):
         elif isinstance(target, str):
             address = target
         else:
-            raise ValueError(
-                'Device must be specified either by mac address or by PranaDeviceInfo instance')
+            raise ValueError("Device must be specified either by mac address or by PranaDeviceInfo instance")
         return address
 
     async def discover(self, timeout: int = 5) -> List[PranaDeviceInfo]:
@@ -68,12 +67,19 @@ class PranaDeviceManager(object):
         """
         async with self.__lock:
             discovered_devs = await bleak.discover(timeout, self.__loop)
-        return list(map(lambda dev: PranaDeviceInfo(address=dev.address, bt_device_name=(dev.name or '').strip(),
-                                                    name=self.__prana_dev_name_2_name(dev.name), rssi=dev.rssi),
-                        filter(PranaDeviceManager.__is_prana_device, discovered_devs)
-                        ))
+        return list(
+            map(
+                lambda dev: PranaDeviceInfo(
+                    address=dev.address,
+                    bt_device_name=(dev.name or "").strip(),
+                    name=self.__prana_dev_name_2_name(dev.name),
+                    rssi=dev.rssi,
+                ),
+                filter(PranaDeviceManager.__is_prana_device, discovered_devs),
+            )
+        )
 
-    async def connect(self, target: Union[str, PranaDeviceInfo], timeout: float = 5, attempts=1) -> 'PranaDevice':
+    async def connect(self, target: Union[str, PranaDeviceInfo], timeout: float = 5, attempts=1) -> "PranaDevice":
         address = self.__addr_for_target(target)
         device = self.__managed_devices.get(address, None)
         if device is None:  # If not found in managed devices list
@@ -88,7 +94,7 @@ class PranaDeviceManager(object):
             except Exception as e:
                 if attempts == 1:
                     raise e
-                self.__logger.warning("Connection failed. Re-connecting...".format(attempts))
+                self.__logger.warning("Connection failed. Attempt #{} Re-connecting...".format(attempts))
                 attempts_left -= 1
         raise RuntimeError("Connection to device {} failed after {} attempts".format(address, attempts))
 
@@ -98,9 +104,9 @@ class PranaDeviceManager(object):
 
 
 class PranaDevice(object):
-    CONTROL_SERVICE_UUID = '0000baba-0000-1000-8000-00805f9b34fb'
-    CONTROL_RW_CHARACTERISTIC_UUID = '0000cccc-0000-1000-8000-00805f9b34fb'
-    STATE_MSG_PREFIX = b'\xbe\xef'
+    CONTROL_SERVICE_UUID = "0000baba-0000-1000-8000-00805f9b34fb"
+    CONTROL_RW_CHARACTERISTIC_UUID = "0000cccc-0000-1000-8000-00805f9b34fb"
+    STATE_MSG_PREFIX = b"\xbe\xef"
 
     class Cmd:
         ENABLE_HIGH_SPEED = bytearray([0xBE, 0xEF, 0x04, 0x07])
@@ -123,8 +129,12 @@ class PranaDevice(object):
         READ_STATE = bytearray([0xBE, 0xEF, 0x05, 0x01, 0x00, 0x00, 0x00, 0x00, 0x5A])
         READ_DEVICE_DETAILS = bytearray([0xBE, 0xEF, 0x05, 0x02, 0x00, 0x00, 0x00, 0x00, 0x5A])
 
-    def __init__(self, target: Union[str, PranaDeviceInfo], loop: Optional[AbstractEventLoop] = None,
-                 iface: str = 'hci0') -> None:
+    def __init__(
+        self,
+        target: Union[str, PranaDeviceInfo],
+        loop: Optional[AbstractEventLoop] = None,
+        iface: str = "hci0",
+    ) -> None:
         self.__address = None
         if isinstance(target, PranaDeviceInfo):
             self.__address = target.address
@@ -132,7 +142,8 @@ class PranaDevice(object):
             self.__address = target
         else:
             raise ValueError(
-                'PranaDevice constructor error: Target must be eithermac address or PranaDeviceInfo instance')
+                "PranaDevice constructor error: Target must be eithermac address or PranaDeviceInfo instance"
+            )
         self.__client = bleak.BleakClient(self.__address, loop, device=iface)
         self.__has_connect_attempts = False
         self.__notification_bytes = None  # type: bytearray
@@ -143,7 +154,7 @@ class PranaDevice(object):
 
     async def __verify_connected(self):
         if not await self.is_connected():
-            raise RuntimeError('Illegal state: device must be connected before running any commands')
+            raise RuntimeError("Illegal state: device must be connected before running any commands")
 
     def notification_handler(self, sender, data):
         """Simple notification handler which prints the data received."""
@@ -170,8 +181,8 @@ class PranaDevice(object):
             return False
         try:
             return await self.__client.is_connected()
-        except:
-            self.__logger.error("Failed to verify connection status")
+        except Exception:
+            self.__logger.error("Is Connected: Failed to verify connection status")
             return False
 
     async def _send_command(self, command: bytearray, expect_reply=False):
