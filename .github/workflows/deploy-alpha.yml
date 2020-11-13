@@ -1,8 +1,9 @@
 
 name: Publish alpha version
-push:
-  branches:
-    - alpha
+on:
+  push:
+    branches:
+      - alpha
 
 jobs: 
   run:
