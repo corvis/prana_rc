@@ -1,6 +1,14 @@
-# Prana RC 
-
 ![Prana device picture](https://github.com/corvis/prana_rc/blob/master/prana_pic.jpg?raw=true "Prana device picture")
+
+<h2 align="center">Prana RC </h2>
+
+[![License: GPLv3](https://img.shields.io/pypi/l/prana-rc?style=for-the-badge)](https://pypi.org/project/prana-rc/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/prana-rc?style=for-the-badge)](https://pypi.org/project/prana-rc/)
+[![Code style: black](https://img.shields.io/badge/Code%20Style-black-black?style=for-the-badge)](https://github.com/psf/black) 
+[![PyPy Downloads](https://img.shields.io/pypi/dm/prana_rc?style=for-the-badge)](https://pypi.org/project/prana-rc/) 
+[![Last Commit](https://img.shields.io/github/last-commit/corvis/prana_rc?style=for-the-badge)](https://github.com/corvis/prana_rc/) 
+[![Last Release](https://img.shields.io/github/release-date/corvis/prana_rc?style=for-the-badge)](https://github.com/corvis/prana_rc/releases)
+
 
 **DISCLAIMER: This library is under active development now. There are no any stable release yet, so please do not 
 use it in your installation unless you are developer who would like to contribute into module**
