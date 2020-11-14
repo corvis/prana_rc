@@ -51,7 +51,7 @@ else:
 # == END: Read version ==
 
 # Get the long description from the README file
-readme_file = path.join(root_dir, 'README.md')
+readme_file = path.join(root_dir, 'media/pypi-description.md')
 try:
     from m2r import parse_from_file
 
