@@ -1,0 +1,24 @@
+
+name: Merge into Alpha
+
+on:
+  workflow_dispatch:
+
+jobs: 
+  run:
+    name: Merge selected branch -> alpha to trigger build
+    runs-on: ubuntu-latest
+    steps: 
+    - name: Checkout repo
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+        ref: '${{ github.ref }}'
+
+    - name: Merge into alpha
+      uses: devmasx/merge-branch@v1.3.1
+      with:
+        type: now
+        from_branch: '${{ github.ref }}'
+        target_branch: alpha
+        github_token: ${{ secrets.GITHUB_TOKEN }}

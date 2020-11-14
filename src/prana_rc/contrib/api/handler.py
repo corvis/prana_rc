@@ -1,16 +1,16 @@
 #    Prana RC
 #    Copyright (C) 2020 Dmitry Berezovsky
-#
+#    
 #    prana is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
-#
+#    
 #    prana is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
-#
+#    
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -22,6 +22,7 @@ from sizzlews.server.annotation import rpc_method
 from sizzlews.server.common import MethodDiscoveryMixin, SizzleWSHandler
 from typing import List, Optional
 
+from prana_rc import utils
 from prana_rc.contrib.api import (
     PranaRCAsyncFacade,
     DEFAULT_TIMEOUT,
@@ -78,13 +79,13 @@ class PranaRCApiHandler(MethodDiscoveryMixin, SizzleWSHandler, PranaRCAsyncFacad
     @rpc_method
     async def discover(self, timeout=4) -> List[PranaDeviceInfoDTO]:
         res = await self.__device_manager.discover(timeout)
-        return [ToDTO.prana_device_info(d) for d in res]
+        return [utils.none_throws(ToDTO.prana_device_info(d)) for d in res]
 
     @rpc_method
     async def get_state(self, address: str, timeout=DEFAULT_TIMEOUT, attempts=DEFAULT_ATTEMPTS) -> PranaStateDTO:
         prana_device = await self.get_connected_prana_device(address, timeout, attempts)
         state = await prana_device.read_state()
-        return ToDTO.prana_state(state)
+        return utils.none_throws(ToDTO.prana_state(state))
 
     @rpc_method
     @validate_arguments
@@ -112,5 +113,5 @@ class PranaRCApiHandler(MethodDiscoveryMixin, SizzleWSHandler, PranaRCAsyncFacad
                 await prana_device.set_normal_speed()
             elif state.mode == Mode.HIGH:
                 await prana_device.set_high_speed()
-        state = await prana_device.read_state()
-        return ToDTO.prana_state(state)
+        new_state = await prana_device.read_state()
+        return utils.none_throws(ToDTO.prana_state(new_state))

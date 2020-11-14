@@ -25,20 +25,34 @@ flake8:
        echo "DONE: Flake8"; \
     )
 
-build: copyright format flake8 clean
+mypy:
 	@( \
+       set -e; \
+       if [ -z $(SKIP_VENV) ]; then source $(VIRTUAL_ENV_PATH)/bin/activate; fi; \
+       echo "Runing MyPy checks..."; \
+       mypy --show-error-codes ./src/prana_rc; \
+       echo "DONE: MyPy"; \
+    )
+
+lint: flake8 mypy
+
+build: copyright format lint clean
+	@( \
+	   set -e; \
        if [ -z $(SKIP_VENV) ]; then source $(VIRTUAL_ENV_PATH)/bin/activate; fi; \
        echo "Building wheel package..."; \
        bash -c "cd src && VERSION_OVERRIDE="$(ALPHA_VERSION)" python ./setup.py bdist_wheel --dist-dir=../dist --bdist-dir=../../build"; \
        echo "DONE: wheel package"; \
     )
 	@( \
+	   set -e; \
        if [ -z $(SKIP_VENV) ]; then source $(VIRTUAL_ENV_PATH)/bin/activate; fi; \
        echo "Building source distribution..."; \
        bash -c "cd src && VERSION_OVERRIDE="$(ALPHA_VERSION)" python ./setup.py sdist --dist-dir=../dist"; \
        echo "DONE: source distribution"; \
     )
 	@( \
+	   set -e; \
        if [ -z $(SKIP_VENV) ]; then source $(VIRTUAL_ENV_PATH)/bin/activate; fi; \
        echo "Building client wheel package..."; \
        bash -c "cd src && VERSION_OVERRIDE="$(ALPHA_VERSION)" python ./client_setup.py bdist_wheel --dist-dir=../dist --bdist-dir=../../build"; \
@@ -66,3 +80,10 @@ publish:
        twine upload -r pypi dist/*; \
        echo "DONE: Publish"; \
     )
+
+set-version:
+	@( \
+		if [ -z $(VERSION) ]; then echo "Missing VERSION argument"; exit 1; fi; \
+		echo '__version__ = "$(VERSION)"' > ./src/prana_rc/__version__.py; \
+		echo "Version updated: $(VERSION)"; \
+	)

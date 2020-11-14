@@ -1,28 +1,29 @@
 #    Prana RC
 #    Copyright (C) 2020 Dmitry Berezovsky
-#
+#    
 #    prana is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
-#
+#    
 #    prana is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
-#
+#    
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import asyncio
 import datetime
 import logging
+from asyncio import AbstractEventLoop, Lock
 
 import bleak
-
-from prana_rc.entity import PranaState, PranaDeviceInfo, Speed
-from asyncio import AbstractEventLoop, Lock
 from typing import Dict, List, Union, Optional
+
+from prana_rc import utils
+from prana_rc.entity import PranaState, PranaDeviceInfo, Speed
 
 
 class PranaDeviceManager(object):
@@ -146,9 +147,9 @@ class PranaDevice(object):
             )
         self.__client = bleak.BleakClient(self.__address, loop, device=iface)
         self.__has_connect_attempts = False
-        self.__notification_bytes = None  # type: bytearray
-        self.__state = None  # type: PranaState
-        self.__read_state_event = None  # type: asyncio.Event
+        self.__notification_bytes: Optional[bytearray] = None
+        self.__state: Optional[PranaState] = None
+        self.__read_state_event: Optional[asyncio.Event] = None
         self.__lock = Lock()
         self.__logger = logging.getLogger(self.__class__.__name__)
 
@@ -262,7 +263,7 @@ class PranaDevice(object):
     async def turn_on(self, speed=Speed.SPEED_3):
         await self.set_speed(speed)
 
-    def __parse_state(self, data: bytearray):
+    def __parse_state(self, data: bytearray) -> Optional[PranaState]:
         if not data[:2] == self.STATE_MSG_PREFIX:
             return None
         s = PranaState()
@@ -291,11 +292,14 @@ class PranaDevice(object):
         state = self.__parse_state(state_bin)
         if state is not None:
             self.__state = state
-        return state
+        return utils.none_throws(state)
 
     async def __wait_for_read_event(self):
         if self.__read_state_event is not None:
             await self.__read_state_event.wait()
 
     def __has_relevant_state(self) -> bool:
-        return not (self.__state is None or (datetime.datetime.now() - self.__state.timestamp).seconds > 60)
+        return not (
+            self.__state is None
+            or (datetime.datetime.now() - utils.none_throws(self.__state.timestamp)).total_seconds() > 60
+        )
