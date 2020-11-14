@@ -13,6 +13,7 @@
 #    
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import codecs
 import fnmatch
 import os
@@ -52,7 +53,7 @@ else:
 # == END: Read version ==
 
 # Get the long description from the README file
-readme_file = path.join(root_dir, 'README.md')
+readme_file = path.join(root_dir, 'media/pypi-client-description.md')
 try:
     from m2r import parse_from_file
 

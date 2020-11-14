@@ -1,35 +1,37 @@
-
 name: Publish alpha version
 on:
   push:
     branches:
       - alpha
+  repository_dispatch:
+    types:
+      - trigger-publish-alpha
 
-jobs: 
+jobs:
   run:
     name: Build and Publish to Test PyPi
     runs-on: ubuntu-latest
-    steps: 
-    - name: Checkout repo
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 1
-    
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.7
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip wheel
-        pip install -r requirements.txt
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
 
-    - name: Lint with flake8
-      run: make NO_VENV=True
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
 
-    - name: Build test packages
-      run: make build NO_VENV=True ALPHA_VERSION=`TZ="Europe/Kiev" date +%Y%m%d.%H%M`
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip wheel
+          pip install -r requirements.txt
 
-    - name: Publish packages
-      run: make publish NO_VENV=True PYPI_REPOSITORY_URL=https://test.pypi.org/legacy/ PYPI_API_KEY=${{ secrets.pypi_test_password }}
+      - name: Lint with flake8
+        run: make NO_VENV=True
+
+      - name: Build test packages
+        run: make build NO_VENV=True ALPHA_VERSION=`TZ="Europe/Kiev" date +%Y%m%d.%H%M`
+
+      - name: Publish packages
+        run: make publish NO_VENV=True PYPI_REPOSITORY_URL=https://test.pypi.org/legacy/ PYPI_API_KEY=${{ secrets.pypi_test_password }}

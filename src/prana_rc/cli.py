@@ -1,16 +1,16 @@
 #    Prana RC
 #    Copyright (C) 2020 Dmitry Berezovsky
-#
+#    
 #    prana is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
-#
+#    
 #    prana is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
-#
+#    
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -218,14 +218,14 @@ async def on_shutdown(signal, loop, device_manager: PranaDeviceManager):
 def discover_cli_extensions(target_package_name: str) -> List[Type]:
     extensions = []
     target_package = importlib.import_module(target_package_name)
-    for loader, pkg_name, is_pkg in pkgutil.walk_packages(target_package.__path__):
+    for loader, pkg_name, is_pkg in pkgutil.walk_packages(target_package.__path__):  # type: ignore
         # Check if we've got a valid extension package
         if is_pkg:
             full_name = ".".join((target_package.__name__, pkg_name))
             try:
                 candidate_pkg = importlib.import_module(full_name)
                 if hasattr(candidate_pkg, "is_available"):
-                    if not candidate_pkg.is_available():
+                    if not candidate_pkg.is_available():  # type: ignore
                         continue  # Package is not supported
                     cli_module = importlib.import_module(".cli", full_name)
                     found_extensions = inspect.getmembers(
