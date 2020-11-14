@@ -1,16 +1,16 @@
 #    Prana RC
 #    Copyright (C) 2020 Dmitry Berezovsky
-#
+#    
 #    prana is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
-#
+#    
 #    prana is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
-#
+#    
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -20,6 +20,7 @@ import sys
 import traceback
 from asyncio import AbstractEventLoop, CancelledError
 from enum import Enum
+from typing import Optional
 
 from prana_rc.entity import Speed, PranaState
 from prana_rc.service import PranaDeviceManager
@@ -76,8 +77,8 @@ class CliExtension(object):
     Allows to extend CLI interface
     """
 
-    COMMAND_NAME = None
-    COMMAND_DESCRIPTION = None
+    COMMAND_NAME: Optional[str] = None
+    COMMAND_DESCRIPTION: Optional[str] = None
 
     def __init__(
         self,

@@ -25,7 +25,18 @@ flake8:
        echo "DONE: Flake8"; \
     )
 
-build: copyright format flake8 clean
+mypy:
+	@( \
+       set -e; \
+       if [ -z $(SKIP_VENV) ]; then source $(VIRTUAL_ENV_PATH)/bin/activate; fi; \
+       echo "Runing MyPy checks..."; \
+       mypy --show-error-codes ./src/prana_rc; \
+       echo "DONE: MyPy"; \
+    )
+
+lint: flake8 mypy
+
+build: copyright format lint clean
 	@( \
        if [ -z $(SKIP_VENV) ]; then source $(VIRTUAL_ENV_PATH)/bin/activate; fi; \
        echo "Building wheel package..."; \

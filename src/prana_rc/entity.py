@@ -1,16 +1,16 @@
 #    Prana RC
 #    Copyright (C) 2020 Dmitry Berezovsky
-#
+#    
 #    prana is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
-#
+#    
 #    prana is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
-#
+#    
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -34,8 +34,8 @@ class Speed(Enum):
     SPEED_9 = 9
 
     @classmethod
-    def all_options(self) -> List[str]:
-        return ["low", "l", "high", "h", "off", "stop", 2, 3, 4, 5, 6, 7, 8, 9]
+    def all_options(cls) -> List[str]:
+        return ["low", "l", "high", "h", "off", "stop", "2", "3", "4", "5", "6", "7", "8", "9"]
 
     @classmethod
     def from_str(cls, speed: str) -> "Speed":
@@ -73,18 +73,18 @@ class PranaDeviceInfo(NamedTuple):
 
 class PranaState(object):
     def __init__(self) -> None:
-        self.speed_locked: int = None
-        self.speed_in: int = None
-        self.speed_out: int = None
-        self.night_mode: bool = None
-        self.auto_mode: bool = None
-        self.flows_locked: bool = None
-        self.is_on: bool = None
-        self.mini_heating_enabled: bool = None
-        self.winter_mode_enabled: bool = None
-        self.is_input_fan_on: bool = None
-        self.is_output_fan_on: bool = None
-        self.timestamp: datetime.datetime = None
+        self.speed_locked: Optional[int] = None
+        self.speed_in: Optional[int] = None
+        self.speed_out: Optional[int] = None
+        self.night_mode: Optional[bool] = None
+        self.auto_mode: Optional[bool] = None
+        self.flows_locked: Optional[bool] = None
+        self.is_on: Optional[bool] = None
+        self.mini_heating_enabled: Optional[bool] = None
+        self.winter_mode_enabled: Optional[bool] = None
+        self.is_input_fan_on: Optional[bool] = None
+        self.is_output_fan_on: Optional[bool] = None
+        self.timestamp: Optional[datetime.datetime] = None
 
     @property
     def speed(self):
@@ -101,7 +101,7 @@ class PranaState(object):
             self.flows_locked,
         )
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return dict(
             speed_locked=self.speed_locked,
             speed_in=self.speed_in,
