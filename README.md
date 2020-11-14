@@ -1,4 +1,4 @@
-![Prana device picture](https://github.com/corvis/prana_rc/blob/master/prana_pic.jpg?raw=true "Prana device picture")
+![Prana device picture](https://github.com/corvis/prana_rc/blob/development/media/cover-picture.jpg?raw=true "Prana device picture")
 
 <h2 align="center">Prana RC </h2>
 
@@ -12,8 +12,6 @@
   <a href="https://github.com/corvis/prana_rc/actions?query=workflow%3A%22Sanity+Check"><img src="https://img.shields.io/github/workflow/status/corvis/prana_rc/Sanity%20Check?style=for-the-badge" title="Build Status"/></a> 
   <a href="https://github.com/corvis/prana_rc/"><img src="https://img.shields.io/github/last-commit/corvis/prana_rc?style=for-the-badge" title="Last Commit"/></a> 
   <a href="https://github.com/corvis/prana_rc/releases/"><img src="https://img.shields.io/github/release-date/corvis/prana_rc?style=for-the-badge" title="Last Release"/></a> 
-
-
 </p>
 
 **DISCLAIMER: This library is under active development now. There are no any stable release yet, so please do not 
@@ -26,6 +24,66 @@ application with some limitations (see limitation section below).
 **ATTENTION**: Manufacturer doesn't provide any technical documentation describing protocol and also officially doesn't 
 provide an ability to interact with the devices programmatically. This library is based on reverse engineering of the 
 closed proprietary protocol. Used it on your own risk.
+
+**Features:**
+
+* Read current prana state
+* Control everything which could be managed via official app with a few exceptions (see limitations section)
+* Discover not connected devices around
+* Client-server architecture (allows distributed setup)
+* CLI interface available for quick tinkering
+
+## Architecture
+
+The library could be used either directly in a python project or it could act as a server which maintains bluetooth connection with Prana device and exposes HTTP interface to the clients. See diagram below:
+
+<p align="center">
+    <img title="Prana RC Architecture" src="https://github.com/corvis/prana_rc/blob/development/media/prana_rc-architecture.png?raw=true" />
+</p>
+
+This approach is recommended as it brings some significant benefits over the embedding prana_rc into own code base:
+
+* **Stability**. Prana RC uses bluetooth library which relies on low level OS APIs. Theoretically it might be a stability risk for your application. In case you use prana server in case of crash it will not affect your application. If you use Dockerized version it is easy to configure automatic restart.
+* **Coverage**. Bluetooth works stable on a relatively small distance (5-10m with no obstacles) this means your server should be located close to the device. Often it is hard\impossible as you have a number of prana devices in different locations so the solution would be to setup a few intermidiate nodes (e.g. some microcomputers like Raspberry Pi) with server component and connect them to the central control unit via API.
+* **Easy integration**. There is no lock on particular technology so the library could be used in conjunction with any tech stack.
+
+## Installation
+
+### Server component
+
+The easiest way is to use pip. In order to install the recent version with HTTP API support run:
+
+```
+pip install prana-rc[server-tornado]
+```
+
+If you prefer dockerized setup you could run it like this:
+
+```
+docker run --rm prana-rc:latest -d  --network=host --restart=unless-stopped	
+```
+
+**NOTE**: It is highly recommended using the fixed version instead of `latest` to avoid unintended upgrades.
+
+### Client 
+
+You could use any http client to query the server. The underlying is JSON-RPCv2. The interface is defined here. 
+
+If you are looking for programmatic access from the python code you might consider python API client. It has minimal dependencies and could be installed from the pip. 
+
+#### AIOHTTP Client
+
+If your project is based on asyncio the recommended way is to use [aiohttp](https://docs.aiohttp.org/en/stable/) based client:
+
+```
+pip install prana-rc.client[aiohttp]
+```
+
+Please find the basic usage example below:
+
+```python
+TBD
+```
 
 # Hardware
 
@@ -50,7 +108,8 @@ Please, create an ticket if you tested it with other device model so we could ex
 * Reading information form built-in sensors (for Eco Energy series) is not supported
 
 # Credits
-Dmitry Berezovsky
+* Dmitry Berezovsky, author
+* [Bleak](https://github.com/hbldh/bleak), bluetooth client library
 
 # Disclaimer
 This module is licensed under GPL v3. This means you are free to use in non-commercial projects.
