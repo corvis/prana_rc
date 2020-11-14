@@ -3,7 +3,6 @@ name: Publish alpha version
 
 on:
   workflow_dispatch:
-    inputs: []
 
 jobs: 
   run:
