@@ -38,8 +38,8 @@ jobs:
     - name: Build packages
       run: make build NO_VENV=True
 
-#    - name: Publish packages
-#      run: make publish NO_VENV=True PYPI_API_KEY=${{ secrets.pypi_password }}
+    - name: Publish packages
+      run: make publish NO_VENV=True PYPI_API_KEY=${{ secrets.pypi_password }}
 
     - name: Bump version
       uses: EndBug/add-and-commit@v5
