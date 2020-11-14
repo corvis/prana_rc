@@ -66,7 +66,7 @@ If your project is based on asyncio the recommended way is to use [aiohttp](http
 pip install prana-rc.client[aiohttp]
 ```
 
-Please find the basic usage example below:
+Here is the basic usage example:
 
 ```python
 TBD
