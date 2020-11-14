@@ -2,13 +2,18 @@
 
 <h2 align="center">Prana RC </h2>
 
-[![License: GPLv3](https://img.shields.io/pypi/l/prana-rc?style=for-the-badge)](https://pypi.org/project/prana-rc/)
-[![Python Versions](https://img.shields.io/pypi/pyversions/prana-rc?style=for-the-badge)](https://pypi.org/project/prana-rc/)
-[![Code style: black](https://img.shields.io/badge/Code%20Style-black-black?style=for-the-badge)](https://github.com/psf/black) 
-[![PyPy Downloads](https://img.shields.io/pypi/dm/prana_rc?style=for-the-badge)](https://pypi.org/project/prana-rc/) 
-[![Last Commit](https://img.shields.io/github/last-commit/corvis/prana_rc?style=for-the-badge)](https://github.com/corvis/prana_rc/) 
-[![Last Release](https://img.shields.io/github/release-date/corvis/prana_rc?style=for-the-badge)](https://github.com/corvis/prana_rc/releases)
+<p align="center">
+  <a href="https://pypi.org/project/prana-rc/"><img src="https://img.shields.io/pypi/l/prana-rc?style=for-the-badge" title="License: GPLv3"/></a> 
+  <a href="https://pypi.org/project/prana-rc/"><img src="https://img.shields.io/pypi/pyversions/prana-rc?style=for-the-badge" title="Python Versions"/></a> 
+  <a href="https://github.com/psf/black/"><img src="https://img.shields.io/badge/Code%20Style-black-black?style=for-the-badge" title="Code style: black"/></a> 
+  <a href="https://pypi.org/project/prana-rc/"><img src="https://img.shields.io/pypi/dm/prana_rc?style=for-the-badge" title="PyPy Downloads"/></a> 
+  <br>
+  <a href="https://github.com/corvis/prana_rc/actions?query=workflow%3A%22Sanity+Check"><img src="https://img.shields.io/github/workflow/status/corvis/prana_rc/Sanity%20Check?style=for-the-badge" title="Build Status"/></a> 
+  <a href="https://github.com/corvis/prana_rc/"><img src="https://img.shields.io/github/last-commit/corvis/prana_rc?style=for-the-badge" title="Last Commit"/></a> 
+  <a href="https://github.com/corvis/prana_rc/releases/"><img src="https://img.shields.io/github/release-date/corvis/prana_rc?style=for-the-badge" title="Last Release"/></a> 
 
+
+</p>
 
 **DISCLAIMER: This library is under active development now. There are no any stable release yet, so please do not 
 use it in your installation unless you are developer who would like to contribute into module**
