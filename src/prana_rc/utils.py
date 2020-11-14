@@ -33,7 +33,7 @@ def none_throws(optional: Optional[_T], message: str = "Unexpected `None`") -> _
 def safe_cast(new_type: Type[_T], value: Any) -> _T:
     """safe_cast will change the type checker's inference of x if it was
     already a subtype of what we are casting to, and error otherwise."""
-    return value        # type: ignore[no-any-return]
+    return value  # type: ignore[no-any-return]
 
 
 # ===================================

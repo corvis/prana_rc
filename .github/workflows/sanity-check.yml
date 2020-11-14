@@ -23,4 +23,7 @@ jobs:
         pip install -r requirements.txt
       
     - name: Lint with flake8
-      run: make NO_VENV=True flake8
+      run: make lint NO_VENV=True
+
+    - name: Run build to make sure it works
+      run: make build NO_VENV=True

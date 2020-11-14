@@ -33,19 +33,24 @@ from prana_rc.contrib.api import (
 class PranaRCAsyncClient(SizzleWsAsyncClient, PranaRCAsyncFacade, metaclass=abc.ABCMeta):
     async def discover(self, timeout=DEFAULT_TIMEOUT) -> List[PranaDeviceInfoDTO]:
         # TODO: set expected response time. Requires ws-sizzle update to support lists
-        return utils.safe_cast(List[PranaDeviceInfoDTO], await self.async_invoke("prana.discover", timeout,
-                                                                                 expected_response_type=None))
+        return utils.safe_cast(
+            List[PranaDeviceInfoDTO], await self.async_invoke("prana.discover", timeout, expected_response_type=None)
+        )
 
     async def get_state(self, address: str, timeout=DEFAULT_TIMEOUT, attempts=DEFAULT_ATTEMPTS) -> PranaStateDTO:
-        return utils.safe_cast(PranaStateDTO, await self.async_invoke("prana.get_state", address, timeout, attempts,
-                                                                      expected_response_type=PranaStateDTO))
+        return utils.safe_cast(
+            PranaStateDTO,
+            await self.async_invoke(
+                "prana.get_state", address, timeout, attempts, expected_response_type=PranaStateDTO
+            ),
+        )
 
     async def set_state(
-            self,
-            address: str,
-            state: SetStateDTO,
-            timeout=DEFAULT_TIMEOUT,
-            attempts=DEFAULT_ATTEMPTS,
+        self,
+        address: str,
+        state: SetStateDTO,
+        timeout=DEFAULT_TIMEOUT,
+        attempts=DEFAULT_ATTEMPTS,
     ) -> PranaStateDTO:
         return utils.safe_cast(
             PranaStateDTO,
