@@ -133,3 +133,4 @@ dmypy.json
 venv
 virtualenv
 src/build
+src/prana_rc/_client_test.py
