@@ -44,11 +44,11 @@ The easiest way is to use pip. In order to install the recent version with HTTP 
 pip install prana-rc[server-tornado]
 ```
 
-If you prefer dockerized setup you could run it like this:
+````If you prefer dockerized setup you could run it like this:
 
 ```
 docker run --rm prana-rc:latest -d  --network=host --restart=unless-stopped	
-```
+```````
 
 **NOTE**: It is highly recommended using the fixed version instead of `latest` to avoid unintended upgrades.
 
