@@ -33,21 +33,7 @@ closed proprietary protocol. Used it on your own risk.
 * Client-server architecture (allows distributed setup)
 * CLI interface available for quick tinkering
 
-## Architecture
-
-The library could be used either directly in a python project or it could act as a server which maintains bluetooth connection with Prana device and exposes HTTP interface to the clients. See diagram below:
-
-<p align="center">
-    <img title="Prana RC Architecture" src="https://github.com/corvis/prana_rc/blob/development/media/prana_rc-architecture.png?raw=true" />
-</p>
-
-This approach is recommended as it brings some significant benefits over the embedding prana_rc into own code base:
-
-* **Stability**. Prana RC uses bluetooth library which relies on low level OS APIs. Theoretically it might be a stability risk for your application. In case you use prana server in case of crash it will not affect your application. If you use Dockerized version it is easy to configure automatic restart.
-* **Coverage**. Bluetooth works stable on a relatively small distance (5-10m with no obstacles) this means your server should be located close to the device. Often it is hard\impossible as you have a number of prana devices in different locations so the solution would be to setup a few intermidiate nodes (e.g. some microcomputers like Raspberry Pi) with server component and connect them to the central control unit via API.
-* **Easy integration**. There is no lock on particular technology so the library could be used in conjunction with any tech stack.
-
-## Installation
+## Installation & Usage
 
 ### Server component
 
@@ -84,6 +70,20 @@ Please find the basic usage example below:
 ```python
 TBD
 ```
+
+## Architecture
+
+The library could be used either directly in a python project or it could act as a server which maintains bluetooth connection with Prana device and exposes HTTP interface to the clients. See diagram below:
+
+<p align="center">
+    <img title="Prana RC Architecture" src="https://github.com/corvis/prana_rc/blob/development/media/prana_rc-architecture.png?raw=true" />
+</p>
+
+This approach is recommended as it brings some significant benefits over the embedding prana_rc into own code base:
+
+* **Stability**. Prana RC uses bluetooth library which relies on low level OS APIs. Theoretically it might be a stability risk for your application. In case you use prana server in case of crash it will not affect your application. If you use Dockerized version it is easy to configure automatic restart.
+* **Coverage**. Bluetooth works stable on a relatively small distance (5-10m with no obstacles) this means your server should be located close to the device. Often it is hard\impossible as you have a number of prana devices in different locations so the solution would be to setup a few intermidiate nodes (e.g. some microcomputers like Raspberry Pi) with server component and connect them to the central control unit via API.
+* **Easy integration**. There is no lock on particular technology so the library could be used in conjunction with any tech stack.
 
 # Hardware
 
