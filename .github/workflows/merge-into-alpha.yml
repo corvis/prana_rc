@@ -22,3 +22,9 @@ jobs:
         from_branch: '${{ github.ref }}'
         target_branch: alpha
         github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Repository Dispatch
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
+        event-type: trigger-publish-alpha
