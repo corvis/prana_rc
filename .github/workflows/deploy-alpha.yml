@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - alpha
-
   repository_dispatch:
     types:
       - trigger-publish-alpha
