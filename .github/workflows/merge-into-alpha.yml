@@ -1,5 +1,5 @@
 
-name: Publish alpha version
+name: Merge into Alpha
 
 on:
   workflow_dispatch:

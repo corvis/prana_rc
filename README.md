@@ -10,6 +10,7 @@
   <a href="https://pypi.org/project/prana-rc/"><img src="https://img.shields.io/pypi/dm/prana_rc?style=for-the-badge" title="PyPy Downloads"/></a> 
   <br>
   <a href="https://github.com/corvis/prana_rc/actions?query=workflow%3A%22Sanity+Check"><img src="https://img.shields.io/github/workflow/status/corvis/prana_rc/Sanity%20Check?style=for-the-badge" title="Build Status"/></a> 
+  <a href="https://app.codacy.com/gh/corvis/prana_rc/dashboard"><img src="https://img.shields.io/codacy/grade/7aa38cc5c1b14aa9ab06ee8af45d5cff?style=for-the-badge&_nocahe=1" title="Codacy Grade"/></a> 
   <a href="https://github.com/corvis/prana_rc/"><img src="https://img.shields.io/github/last-commit/corvis/prana_rc?style=for-the-badge" title="Last Commit"/></a> 
   <a href="https://github.com/corvis/prana_rc/releases/"><img src="https://img.shields.io/github/release-date/corvis/prana_rc?style=for-the-badge" title="Last Release"/></a> 
 </p>
