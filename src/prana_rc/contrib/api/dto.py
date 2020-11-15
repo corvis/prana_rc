@@ -28,6 +28,9 @@ class SetStateDTO(pydantic.BaseModel):
     winter_mode: Optional[bool] = None
     heating: Optional[bool] = None
 
+    class Config:
+        use_enum_values = True
+
 
 class PranaDeviceInfoDTO(pydantic.BaseModel):
     address: Optional[str] = None
