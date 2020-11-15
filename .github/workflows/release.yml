@@ -50,16 +50,16 @@ jobs:
         issues: true
 
     - uses: heinrichreimer/github-changelog-generator-action@v2.1.1
-        id: generate_release_changelog
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          output: RELEASE_CHANGELOG.md
-          unreleasedOnly: true
-          issues: true
-          headerLabel: '## Changelog'
-          stripGeneratorNotice: true
-          stripHeaders: true
-          unreleasedLabel: ''
+      id: generate_release_changelog
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        output: RELEASE_CHANGELOG.md
+        unreleasedOnly: true
+        issues: true
+        headerLabel: '## Changelog'
+        stripGeneratorNotice: true
+        stripHeaders: true
+        unreleasedLabel: ''
 
     - name: Read Changelog
       # This is a workaround for https://github.com/heinrichreimer/action-github-changelog-generator/issues/7
