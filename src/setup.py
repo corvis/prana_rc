@@ -105,7 +105,7 @@ setup(
     # py_modules=["app", 'cli', 'daemonize'],
 
     install_requires=[
-        'bleak>=0.7.1',
+        'bleak==0.9.1',
         'typing>=3.6',
         'service_identity>=18.0.0',
     ],

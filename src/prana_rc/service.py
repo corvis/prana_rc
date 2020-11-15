@@ -67,7 +67,7 @@ class PranaDeviceManager(object):
         :return: list of discovered devices
         """
         async with self.__lock:
-            discovered_devs = await bleak.discover(timeout, self.__loop)
+            discovered_devs = await bleak.discover(timeout)
         return list(
             map(
                 lambda dev: PranaDeviceInfo(
@@ -145,7 +145,7 @@ class PranaDevice(object):
             raise ValueError(
                 "PranaDevice constructor error: Target must be eithermac address or PranaDeviceInfo instance"
             )
-        self.__client = bleak.BleakClient(self.__address, loop, device=iface)
+        self.__client = bleak.BleakClient(self.__address, device=iface)
         self.__has_connect_attempts = False
         self.__notification_bytes: Optional[bytearray] = None
         self.__state: Optional[PranaState] = None

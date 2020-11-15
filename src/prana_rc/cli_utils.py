@@ -22,6 +22,7 @@ from asyncio import AbstractEventLoop, CancelledError
 from enum import Enum
 from typing import Optional
 
+from prana_rc.contrib.api.handler import ToDTO
 from prana_rc.entity import Speed, PranaState
 from prana_rc.service import PranaDeviceManager
 
@@ -62,7 +63,7 @@ class CLI:
         if output_format == OutputFormat.TEXT:
             cls.print_data(str(state))
         elif output_format == OutputFormat.JSON:
-            cls.print_data(json.dumps(state.to_dict()))
+            cls.print_data(ToDTO.prana_state(state).json())
 
     @classmethod
     def print_version(cls, version_obj: dict, output_format: OutputFormat = OutputFormat.TEXT):
