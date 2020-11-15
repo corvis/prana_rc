@@ -42,12 +42,31 @@ jobs:
       run: make publish NO_VENV=True PYPI_API_KEY=${{ secrets.pypi_password }}
 
     - uses: heinrichreimer/github-changelog-generator-action@v2.1.1
-      id: generate_changelog
+      id: generate_changelog_file
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        output: CHANGELOG.MD
+        output: CHANGELOG.md
         futureRelease: v${{ github.event.inputs.version }}
         issues: true
+
+    - uses: heinrichreimer/github-changelog-generator-action@v2.1.1
+        id: generate_release_changelog
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          output: RELEASE_CHANGELOG.md
+          unreleasedOnly: true
+          issues: true
+          headerLabel: '## Changelog'
+          stripGeneratorNotice: true
+          stripHeaders: true
+          unreleasedLabel: ''
+
+    - name: Read Changelog
+      # This is a workaround for https://github.com/heinrichreimer/action-github-changelog-generator/issues/7
+      id: release_changelog
+      uses: juliangruber/read-file-action@v1
+      with:
+        path: ./RELEASE_CHANGELOG.md
 
     - name: Bump version
       uses: EndBug/add-and-commit@v5
@@ -55,7 +74,7 @@ jobs:
         author_name: Github Bot
         author_email: github@bot.com
         message: "Version bump and changelog update. New version is ${{ github.event.inputs.version }}"
-        add: "./src/prana_rc/__version__.py CHANGELOG.MD"
+        add: "./src/prana_rc/__version__.py CHANGELOG.md"
         push: true
         tag: "v${{ github.event.inputs.version }} --force"
       env:
@@ -78,8 +97,6 @@ jobs:
         tag_name: 'v${{ github.event.inputs.version }}'
         release_name: '${{ github.event.inputs.version }}'
         body: |
-          Changes in this Release
-          - TBD
-          - TBD
+          ${{ steps.release_changelog.outputs.content }}
         draft: true
         prerelease: false
