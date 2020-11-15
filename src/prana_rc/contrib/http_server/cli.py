@@ -14,6 +14,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import argparse
 import asyncio
 
 from sizzlews.server.tornado import (
@@ -29,14 +30,35 @@ class HttpServerCLIExtension(CliExtension):
     COMMAND_NAME = "http-server"
     COMMAND_DESCRIPTION = "Run HTTP server which exposes functionality via RPC interface"
 
-    async def handle(self, args):
-        CLI.print_info("HTTP SERVER!")
+    @classmethod
+    def setup_parser(cls, parser: argparse.ArgumentParser):
+        parser.add_argument(
+            "-p",
+            "--port",
+            dest="http_port",
+            action="store",
+            required=False,
+            type=int,
+            default=8881,
+            help="Port to bind http server.",
+        )
+        parser.add_argument(
+            "-r",
+            "--path",
+            dest="http_path",
+            action="store",
+            required=False,
+            type=str,
+            default="/",
+            help="Http path to bind rpc endpoint. E.g. /rpc will mount rpc server to "
+            "http://localhost:<port>/rpc endpoint. If nothing is rpc will be mounted to the root. ",
+        )
+
+    async def handle(self, args: argparse.Namespace):
+        CLI.print_info("Prana RC: Starting in HTTP server mode")
         device_manager = PranaDeviceManager(iface=args.iface)
         prana_api = PranaRCApiHandler(device_manager, asyncio.get_event_loop())
-        # app = tornado.web.Application([
-        #     ('/', TornadoHttpSizzleWSHandler, dict(api_handler=prana_api))
-        # ])
-        # app.listen(8888)
-        bootstrap_torando_rpc_application(prana_api, 8888, "/")
+        bootstrap_torando_rpc_application(prana_api, args.http_port, args.http_path)
+        CLI.print_info("HTTP: Listening on http://0.0.0.0:{}{}".format(args.http_port, args.http_path))
         while True:
             await asyncio.sleep(5)
