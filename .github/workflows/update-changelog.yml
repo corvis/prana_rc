@@ -28,7 +28,7 @@ jobs:
         stripGeneratorNotice: true
         stripHeaders: true
         unreleasedLabel: ''
-        addSections: { "notable-change": {"prefix": "**Notable Changes:**", "labels": ["notable change"]} }
+        addSections: '{ "notable-change": {"prefix": "**NotableChanges:**", "labels": ["notable change"]} }'
 
 
 #    - name: Commit changelog
