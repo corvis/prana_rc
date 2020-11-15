@@ -41,13 +41,21 @@ jobs:
     - name: Publish packages
       run: make publish NO_VENV=True PYPI_API_KEY=${{ secrets.pypi_password }}
 
+    - uses: heinrichreimer/github-changelog-generator-action@v2.1.1
+      id: generate_changelog
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        output: CHANGELOG.MD
+        futureRelease: v${{ github.event.inputs.version }}
+        issues: true
+
     - name: Bump version
       uses: EndBug/add-and-commit@v5
       with:
         author_name: Github Bot
         author_email: github@bot.com
-        message: "Version bump. New version is ${{ github.event.inputs.version }}"
-        add: "./src/prana_rc/__version__.py"
+        message: "Version bump and changelog update. New version is ${{ github.event.inputs.version }}"
+        add: "./src/prana_rc/__version__.py CHANGELOG.MD"
         push: true
         tag: "v${{ github.event.inputs.version }} --force"
       env:

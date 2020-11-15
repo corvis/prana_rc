@@ -24,7 +24,8 @@ jobs:
         issues: true
         headerLabel: Changes
         stripGeneratorNotice: true
-        stripHeaders: stripHeaders
+        stripHeaders: true
+        unreleasedLabel: ''
 
 
 #    - name: Commit changelog
