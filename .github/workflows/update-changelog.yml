@@ -11,10 +11,18 @@ jobs:
     name: Update Unreleased Changelog
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
     - uses: heinrichreimer/github-changelog-generator-action@v2.1.1
       id: generate_changelog
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
+        unreleasedOnly: true
+        github_username: corvis
+        issues: true
 
     - uses: DamianReeves/write-file-action@v1.0
       with:
