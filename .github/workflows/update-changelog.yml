@@ -20,18 +20,8 @@ jobs:
       id: generate_changelog
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        unreleasedOnly: true
-        github_username: corvis
+#        unreleasedOnly: true
         issues: true
-
-    - uses: DamianReeves/write-file-action@v1.0
-      with:
-        path: UNRELEASED_CHANGELOG.MD
-        contents: ${{ steps.generate_changelog.outputs.changelog }}
-        write-mode: overwrite
-
-    - run: |
-        echo ${{ steps.generate_changelog.outputs.changelog }}
 
 
 #    - name: Commit changelog
