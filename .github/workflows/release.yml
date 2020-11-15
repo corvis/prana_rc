@@ -47,7 +47,9 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         output: CHANGELOG.md
         futureRelease: v${{ github.event.inputs.version }}
+        unreleased: true
         issues: true
+        addSections: '{"notable-change": {"prefix": "**Notable Changes:**", "labels": ["notable change"]}  }'
 
     - uses: heinrichreimer/github-changelog-generator-action@v2.1.1
       id: generate_release_changelog
@@ -60,6 +62,7 @@ jobs:
         stripGeneratorNotice: true
         stripHeaders: true
         unreleasedLabel: ''
+        addSections: '{"notable-change": {"prefix": "**Notable Changes:**", "labels": ["notable change"]}  }'
 
     - name: Read Changelog
       # This is a workaround for https://github.com/heinrichreimer/action-github-changelog-generator/issues/7
