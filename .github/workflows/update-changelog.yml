@@ -20,8 +20,11 @@ jobs:
       id: generate_changelog
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-#        unreleasedOnly: true
+        unreleasedOnly: true
         issues: true
+        headerLabel: Changes
+        stripGeneratorNotice: true
+        stripHeaders: stripHeaders
 
 
 #    - name: Commit changelog
