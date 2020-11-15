@@ -33,7 +33,7 @@ class PranaDeviceManager(object):
         self.__ble_interface = iface
         self.__loop = loop
         self.__logger = logging.getLogger(self.__class__.__name__)
-        self.__managed_devices = {}  # type: Dict['str', PranaDevice]
+        self.__managed_devices: Dict["str", PranaDevice] = {}
         self.__lock = Lock()
 
     @classmethod
@@ -98,6 +98,7 @@ class PranaDeviceManager(object):
                     raise e
                 self.__logger.warning("Connection failed. Attempt #{} Re-connecting...".format(current_attempt))
                 attempts_left -= 1
+                await asyncio.sleep(0.5)
         raise RuntimeError("Connection to device {} failed after {} attempts".format(address, attempts))
 
     async def disconnect_all(self):

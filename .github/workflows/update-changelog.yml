@@ -1,5 +1,7 @@
 name: Update Changelog
 
+# Use this task to tune changelog generator AND verify changelog before release
+
 on:
   push:
     branches:
@@ -26,6 +28,7 @@ jobs:
         stripGeneratorNotice: true
         stripHeaders: true
         unreleasedLabel: ''
+#        addSections: '{ "notable-change": {"prefix": "**NotableChanges:**", "labels": ["notable-change"]} }'
 
 
 #    - name: Commit changelog
