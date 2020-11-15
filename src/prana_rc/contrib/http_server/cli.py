@@ -16,6 +16,7 @@
 
 import argparse
 import asyncio
+from asyncio import CancelledError
 
 from sizzlews.server.tornado import (
     bootstrap_torando_rpc_application,
@@ -60,5 +61,10 @@ class HttpServerCLIExtension(CliExtension):
         prana_api = PranaRCApiHandler(device_manager, asyncio.get_event_loop())
         bootstrap_torando_rpc_application(prana_api, args.http_port, args.http_path)
         CLI.print_info("HTTP: Listening on http://0.0.0.0:{}{}".format(args.http_port, args.http_path))
-        while True:
-            await asyncio.sleep(5)
+        try:
+            while True:
+                await asyncio.sleep(5)
+        except CancelledError:
+            CLI.print_info("Received shutdown signal. Closing connections...")
+            await device_manager.disconnect_all()
+            CLI.print_info("Connections closed")

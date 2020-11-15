@@ -15,6 +15,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import abc
+import json
 
 from sizzlews.client.common import SizzleWsAsyncClient
 from typing import List
@@ -55,6 +56,6 @@ class PranaRCAsyncClient(SizzleWsAsyncClient, PranaRCAsyncFacade, metaclass=abc.
         return utils.safe_cast(
             PranaStateDTO,
             await self.async_invoke(
-                "prana.set_state", address, state.dict(), timeout, expected_response_type=PranaStateDTO
+                "prana.set_state", address, json.loads(state.json()), timeout, expected_response_type=PranaStateDTO
             ),
         )
