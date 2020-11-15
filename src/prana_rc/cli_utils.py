@@ -84,10 +84,10 @@ class CliExtension(object):
     COMMAND_DESCRIPTION: Optional[str] = None
 
     def __init__(
-            self,
-            parser: argparse.ArgumentParser,
-            device_manager: PranaDeviceManager,
-            loop: AbstractEventLoop,
+        self,
+        parser: argparse.ArgumentParser,
+        device_manager: PranaDeviceManager,
+        loop: AbstractEventLoop,
     ):
         super().__init__()
         self.parser = parser
