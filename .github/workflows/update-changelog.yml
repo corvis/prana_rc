@@ -1,0 +1,40 @@
+name: Update Changelog
+
+on:
+  push:
+    branches:
+      - development
+  workflow_dispatch:
+
+jobs:
+  run:
+    name: Update Unreleased Changelog
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - uses: heinrichreimer/github-changelog-generator-action@v2.1.1
+      id: generate_changelog
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        unreleasedOnly: true
+        issues: true
+        headerLabel: Changes
+        stripGeneratorNotice: true
+        stripHeaders: true
+        unreleasedLabel: ''
+
+
+#    - name: Commit changelog
+#      uses: EndBug/add-and-commit@v5
+#      with:
+#        author_name: Github Bot
+#        author_email: github@bot.com
+#        message: "Updated unreleased changelog"
+#        add: "UNRELEASED_CHANGELOG.MD"
+#        push: true
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

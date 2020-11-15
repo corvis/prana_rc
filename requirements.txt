@@ -1,11 +1,11 @@
-bleak>=0.7.1
+bleak>=0.9.1
 service_identity>=18.0.0
 
 
 # API packages
 pydantic>=1.6
 # Package tornado
-ws-sizzle[tornado,aiohttp]>=0.0.4
+ws-sizzle[tornado,aiohttp]>=0.0.6
 
 # Development dependencies
 copyright==1.0.1.0

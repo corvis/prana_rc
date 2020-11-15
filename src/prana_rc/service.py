@@ -89,13 +89,14 @@ class PranaDeviceManager(object):
         # if not await device.is_connected():
         attempts_left = attempts
         while attempts_left > 0:
+            current_attempt = (attempts - attempts_left) + 1
             try:
                 await device.connect(timeout)
                 return device
             except Exception as e:
                 if attempts == 1:
                     raise e
-                self.__logger.warning("Connection failed. Attempt #{} Re-connecting...".format(attempts))
+                self.__logger.warning("Connection failed. Attempt #{} Re-connecting...".format(current_attempt))
                 attempts_left -= 1
         raise RuntimeError("Connection to device {} failed after {} attempts".format(address, attempts))
 
