@@ -6,7 +6,7 @@ ALPHA_VERSION :=
 
 .DEFAULT_GOAL := pre_commit
 
-pre_commit: copyright flake8
+pre_commit: copyright format lint
 
 copyright:
 	@( \

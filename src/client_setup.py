@@ -118,6 +118,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
     ],
+    python_requires='>3.6',
 
     # Structure
     packages=find_packages(include=['prana_rc', 'prana_rc.*']),

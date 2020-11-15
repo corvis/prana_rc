@@ -98,13 +98,14 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
+    python_requires='>3.6',
 
     # Structure
     packages=find_packages(include=['prana_rc', 'prana_rc.*']),
     # py_modules=["app", 'cli', 'daemonize'],
 
     install_requires=[
-        'bleak>=0.7.1',
+        'bleak==0.9.1',
         'typing>=3.6',
         'service_identity>=18.0.0',
     ],

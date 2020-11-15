@@ -1,16 +1,16 @@
 #    Prana RC
 #    Copyright (C) 2020 Dmitry Berezovsky
-#    
+#
 #    prana is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
-#    
+#
 #    prana is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
-#    
+#
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -22,6 +22,9 @@ from asyncio import AbstractEventLoop, CancelledError
 from enum import Enum
 from typing import Optional
 
+from prana_rc import utils
+from prana_rc.contrib.api import PranaStateDTO
+from prana_rc.contrib.api.handler import ToDTO
 from prana_rc.entity import Speed, PranaState
 from prana_rc.service import PranaDeviceManager
 
@@ -62,7 +65,7 @@ class CLI:
         if output_format == OutputFormat.TEXT:
             cls.print_data(str(state))
         elif output_format == OutputFormat.JSON:
-            cls.print_data(json.dumps(state.to_dict()))
+            cls.print_data(utils.safe_cast(PranaStateDTO, ToDTO.prana_state(state)).json())
 
     @classmethod
     def print_version(cls, version_obj: dict, output_format: OutputFormat = OutputFormat.TEXT):
@@ -91,7 +94,8 @@ class CliExtension(object):
         self.__devce_manager = device_manager
         self.__loop = loop
 
-    def _ensure_device_arg(self, args):
+    @staticmethod
+    def _ensure_device_arg(args):
         if args.device is None:
             raise ValueError("Device is not set. Please check --device option.")
 
