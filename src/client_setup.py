@@ -124,7 +124,7 @@ setup(
     packages=find_packages(include=['prana_rc', 'prana_rc.*']),
 
     install_requires=[
-        'ws-sizzle[aiohttp]>=0.0.4'
+        'ws-sizzle[aiohttp]>=0.0.6'
     ],
 
     # Extra dependencies might be installed with:
