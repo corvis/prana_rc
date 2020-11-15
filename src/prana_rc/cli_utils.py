@@ -15,6 +15,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
+import asyncio
 import json
 import sys
 import traceback
@@ -117,6 +118,8 @@ class CliExtension(object):
                 attempt_number += 1
                 CLI.print_error(e)
                 CLI.print_info("Reconnecting... Attempt #{}".format(attempt_number))
+                await asyncio.sleep(1)
+        raise RuntimeError("Unable to connect after {} attempts".format(attempt_number - 1))
 
     @property
     def device_manager(self) -> PranaDeviceManager:
