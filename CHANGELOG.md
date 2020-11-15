@@ -1,5 +1,28 @@
 # Changelog
 
+## [v0.3.4](https://github.com/corvis/prana_rc/tree/v0.3.4) (2020-11-15)
+
+**Implemented enhancements:**
+
+- Add timeout before connection attempts [\#6](https://github.com/corvis/prana_rc/issues/6)
+
+**Fixed bugs:**
+
+- HTTP Server doesn't closed ble connections correctly on sigterm [\#8](https://github.com/corvis/prana_rc/issues/8)
+- HTTP client fails to send set state command due to serialization error [\#7](https://github.com/corvis/prana_rc/issues/7)
+- CLI tries to proceed with business logic even when connection wasn't established [\#5](https://github.com/corvis/prana_rc/issues/5)
+
+## [v0.3.3](https://github.com/corvis/prana_rc/tree/v0.3.3) (2020-11-15)
+
+**Implemented enhancements:**
+
+- Improve error handling to the client receive more straightforward error message [\#4](https://github.com/corvis/prana_rc/issues/4)
+- Improvements to the HTTP server inteface [\#3](https://github.com/corvis/prana_rc/issues/3)
+
+**Fixed bugs:**
+
+- Attempt number in case of connection failure is invalid in log message [\#2](https://github.com/corvis/prana_rc/issues/2)
+
 ## [v0.3.2](https://github.com/corvis/prana_rc/tree/v0.3.2) (2020-11-15)
 
 ## [v0.3.1](https://github.com/corvis/prana_rc/tree/v0.3.1) (2020-11-14)
