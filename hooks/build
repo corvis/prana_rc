@@ -1,0 +1,4 @@
+#!/bin/sh
+docker build  --build-arg prana_version=$DOCKER_TAG \
+              --build-arg release_date=`date +%Y%m%d` \
+              -t $IMAGE_NAME .
