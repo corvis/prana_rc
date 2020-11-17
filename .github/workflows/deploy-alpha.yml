@@ -50,7 +50,16 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/alpha'
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
       - name: Download wheel
-          uses: actions/download-artifact@v1
-          with:
-            name: prana_rc.whl
+        uses: actions/download-artifact@v1
+        with:
+          name: prana_rc.whl
+          path: dist/prana_rc.whl
+
+      - name: test
+        run: ls -la && ls -la dist
