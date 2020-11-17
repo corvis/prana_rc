@@ -2,3 +2,5 @@
 ./media
 ./development
 ./.*
+./.github
+./.mypy_cache
