@@ -8,7 +8,7 @@ on:
       - trigger-publish-alpha
 
 jobs:
-  run:
+  build:
     name: Build and Publish to Test PyPi
     runs-on: ubuntu-latest
     steps:
@@ -47,8 +47,9 @@ jobs:
 
   docker_dev:
     name: Build and publish alpha docker image
+    needs: [build]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/alpha'
+    if: jobs.build.status == 'success'
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
