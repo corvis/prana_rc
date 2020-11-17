@@ -41,7 +41,7 @@ jobs:
     - name: Publish packages
       run: make publish NO_VENV=True PYPI_API_KEY=${{ secrets.pypi_password }}
 
-    - uses: heinrichreimer/github-changelog-generator-action@v2.1.1
+    - uses: heinrichreimer/github-changelog-generator-action@v2.2
       id: generate_changelog_file
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -51,7 +51,7 @@ jobs:
         issues: true
 #        addSections: '{ "notable-change": {"prefix": "**NotableChanges:**", "labels": ["notable-change"]} }'
 
-    - uses: heinrichreimer/github-changelog-generator-action@v2.1.1
+    - uses: heinrichreimer/github-changelog-generator-action@v2.2
       id: generate_release_changelog
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -97,8 +97,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: 'v${{ github.event.inputs.version }}'
-        release_name: '${{ github.event.inputs.version }}'
+        tag_name: '${{ github.event.inputs.version }}'
+        release_name: 'Version ${{ github.event.inputs.version }}'
         body: |
           ${{ steps.release_changelog.outputs.content }}
         draft: true

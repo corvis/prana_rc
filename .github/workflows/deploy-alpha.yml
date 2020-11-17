@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Build and Publish to Test PyPi
+    name: Build and Publish Alpha version
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -38,7 +38,7 @@ jobs:
           echo "RELEASE_DATE=RELEASE_DATE" >> $GITHUB_ENV
           make build NO_VENV=True ALPHA_VERSION=$VERSION
 
-      - name: Upload math result for job 2
+      - name: Upload artifact
         uses: actions/upload-artifact@v1
         with:
           name: prana_rc.whl
@@ -65,7 +65,7 @@ jobs:
         with:
           context: .
           file: ./local.Dockerfile
-          platforms: linux/386,linux/amd64,linux/arm/v6,linux/arm/v7
+          platforms: linux/amd64,linux/arm/v6,linux/arm/v7
           push: true
           build-args: |
             prana_version=${{ env.VERSION }}
