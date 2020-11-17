@@ -11,7 +11,9 @@ RUN apt-get update --no-install-recommends \
 ENTRYPOINT ["prana"]
 CMD ["http-server"]
 
-RUN pip install prana-rc[server-tornado]==${prana_version}
+COPY dist/prana_rc-${prana_version}-py3-none-any.whl .
+
+RUN pip install prana_rc-${prana_version}-py3-none-any.whl[server-tornado]
 
 LABEL x.prana.version="${prana_version}" \
       x.prana.release-date="${release_date}" \

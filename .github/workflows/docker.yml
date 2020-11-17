@@ -1,0 +1,67 @@
+name: Build docker images
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to be assigned for this release'
+  release:
+    types: [created]
+
+jobs:
+  run:
+    name: Build and publish docker images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Version from workflow event
+        if: github.event.inputs.version != null
+        run: |
+          VERSION=${{ github.event.inputs.version }}
+          VERSION=${VERSION/v/}
+          echo "Version = $VERSION"
+          export RELEASE_DATE=`TZ="Europe/Kiev" date +%Y-%m-%d`
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "RELEASE_DATE=$RELEASE_DATE" >> $GITHUB_ENV
+
+      - name: Version from release
+        if: github.event.release != null
+        run: |
+          #VERSION=${GITHUB_REF/refs\/tags\//}
+          VERSION=${{ github.event.release.tag_name }}
+          VERSION=${VERSION/v/}
+          echo "Version = $VERSION"
+          export RELEASE_DATE=`TZ="Europe/Kiev" date +%Y-%m-%d`
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "RELEASE_DATE=$RELEASE_DATE" >> $GITHUB_ENV
+
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+#          ref: 'refs/tags/v${{ env.VERSION }}'
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm/v6,linux/arm/v7
+          push: true
+          build-args: |
+            prana_version=${{ env.VERSION }}
+            release_date=${{ env.RELEASE_DATE }}
+            is_beta=False
+          tags: |
+            corvis/prana-rc:latest
+            corvis/prana-rc:${{ env.VERSION }}

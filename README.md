@@ -44,13 +44,19 @@ The easiest way is to use pip. In order to install the recent version with HTTP 
 pip install prana-rc[server-tornado]
 ```
 
-````If you prefer dockerized setup you could run it like this:
+If you prefer dockerized setup you could run it like this:
+
+​```
+docker run --volume /run/dbus/system_bus_socket:/run/dbus/system_bus_socket  --restart=unless-stopped prana-rc:latest
+​```
+
+By default it will run `http-server` command, however you could run any cli commend by addign extra arguments to the end. For example to run discover you could use:
 
 ```
-docker run --rm prana-rc:latest -d  --network=host --restart=unless-stopped	
-```````
+docker run --rm --volume /run/dbus/system_bus_socket:/run/dbus/system_bus_socket corvis/prana-rc:latest discover
+```
 
-**NOTE**: It is highly recommended using the fixed version instead of `latest` to avoid unintended upgrades.
+**NOTE**: It is highly recommended to use the fixed version instead of `latest` to avoid unintended upgrades.
 
 ### Client 
 
@@ -62,15 +68,15 @@ If you are looking for programmatic access from the python code you might consid
 
 If your project is based on asyncio the recommended way is to use [aiohttp](https://docs.aiohttp.org/en/stable/) based client:
 
-```
+​```
 pip install prana-rc.client[aiohttp]
-```
+​```
 
 Here is the basic usage example:
 
-```python
+​```python
 TBD
-```
+​```
 
 ## Architecture
 
