@@ -65,3 +65,10 @@ jobs:
           tags: |
             corvis/prana-rc:latest
             corvis/prana-rc:${{ env.VERSION }}
+
+      - name: Update repo description
+        uses: peter-evans/dockerhub-description@v2.4.1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: corvis/prana-rc
