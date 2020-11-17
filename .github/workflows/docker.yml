@@ -56,12 +56,12 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-#          platforms: linux/amd64,linux/arm/v6,linux/arm/v7
-          platforms: linux/amd64,linux/arm/v7
+          platforms: linux/amd64,linux/arm/v6,linux/arm/v7
           push: true
           build-args: |
             prana_version=${{ env.VERSION }}
             release_date=${{ env.RELEASE_DATE }}
-            is_beta=True
+            is_beta=False
           tags: |
             corvis/prana-rc:latest
+            corvis/prana-rc:${{ env.VERSION }}
