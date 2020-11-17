@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Version from workflow event
-        if: github.event.inputs.version
+        if: github.event.inputs.version != null
         run: |
           VERSION={{ github.event.inputs.version }}
           export RELEASE_DATE=`TZ="Europe/Kiev" date +%Y-%m-%d`
