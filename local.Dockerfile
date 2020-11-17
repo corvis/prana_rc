@@ -1,11 +1,10 @@
 FROM python:3.7
-MAINTAINER "github.com/corvis"
 
 ARG prana_version
 ARG release_date
 ARG is_beta=False
 
-RUN apt-get update \
+RUN apt-get update --no-install-recommends \
   && apt-get install -y bluez \
   && rm -rf /var/lib/apt/lists/*
 
