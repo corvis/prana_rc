@@ -31,7 +31,26 @@ jobs:
         run: make NO_VENV=True
 
       - name: Build test packages
-        run: make build NO_VENV=True ALPHA_VERSION=`TZ="Europe/Kiev" date +%Y%m%d.%H%M`
+        run: |
+          export VERSION=`TZ="Europe/Kiev" date +%Y%m%d.%H%M`
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          make build NO_VENV=True ALPHA_VERSION=$VERSION
+
+      - name: Upload math result for job 2
+        uses: actions/upload-artifact@v1
+        with:
+          name: prana_rc.whl
+          path: dist/prana_rc-${{ env.VERSION }}-py3-none-any.whl
 
       - name: Publish packages
         run: make publish NO_VENV=True PYPI_REPOSITORY_URL=https://test.pypi.org/legacy/ PYPI_API_KEY=${{ secrets.pypi_test_password }}
+
+  docker_dev:
+    name: Build and publish alpha docker image
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/alpha'
+    steps:
+      - name: Download wheel
+          uses: actions/download-artifact@v1
+          with:
+            name: prana_rc.whl
