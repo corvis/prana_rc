@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 1
-          ref: 'refs/heads/${{ env.VERSION }}'
+#          ref: 'refs/tags/${{ env.VERSION }}'
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
