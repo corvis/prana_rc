@@ -18,7 +18,6 @@ import argparse
 import asyncio
 import importlib
 import inspect
-import logging
 import pkgutil
 import signal
 from asyncio import CancelledError

@@ -138,10 +138,10 @@ class PranaDevice(object):
         READ_DEVICE_DETAILS = bytearray([0xBE, 0xEF, 0x05, 0x02, 0x00, 0x00, 0x00, 0x00, 0x5A])
 
     def __init__(
-            self,
-            target: Union[str, PranaDeviceInfo],
-            loop: Optional[AbstractEventLoop] = None,
-            iface: str = "hci0",
+        self,
+        target: Union[str, PranaDeviceInfo],
+        loop: Optional[AbstractEventLoop] = None,
+        iface: str = "hci0",
     ) -> None:
         self.__address = None
         if isinstance(target, PranaDeviceInfo):
@@ -273,8 +273,8 @@ class PranaDevice(object):
     def __parse_state(self, data: bytearray) -> Optional[PranaState]:
         if not data[:2] == self.STATE_MSG_PREFIX:
             return None
-        self.__logger.debug('State data:')
-        self.__logger.debug(''.join('{:02x}'.format(x) for x in data))
+        self.__logger.debug("State data:")
+        self.__logger.debug("".join("{:02x}".format(x) for x in data))
         s = PranaState()
         s.timestamp = datetime.datetime.now()
         s.brightness = int(log2(data[12]) + 1)
@@ -310,8 +310,8 @@ class PranaDevice(object):
 
     def __has_relevant_state(self) -> bool:
         return not (
-                self.__state is None
-                or (datetime.datetime.now() - utils.none_throws(self.__state.timestamp)).total_seconds() > 60
+            self.__state is None
+            or (datetime.datetime.now() - utils.none_throws(self.__state.timestamp)).total_seconds() > 60
         )
 
     @property
