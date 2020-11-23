@@ -84,6 +84,7 @@ class PranaState(object):
         self.winter_mode_enabled: Optional[bool] = None
         self.is_input_fan_on: Optional[bool] = None
         self.is_output_fan_on: Optional[bool] = None
+        self.brightness: Optional[int] = None
         self.timestamp: Optional[datetime.datetime] = None
 
     @property
@@ -93,12 +94,13 @@ class PranaState(object):
         return self.speed_locked if self.flows_locked else int((self.speed_in + self.speed_out) / 2)
 
     def __repr__(self):
-        return "Prana state: {}, Speed: {}, Winter Mode: {}, Heating: {}, Flows locked: {}".format(
+        return "Prana state: {}, Speed: {}, Winter Mode: {}, Heating: {}, Flows locked: {}, Brightness: {}".format(
             "RUNNING" if self.is_on else "IDLE",
             self.speed,
             self.winter_mode_enabled,
             self.mini_heating_enabled,
             self.flows_locked,
+            self.brightness,
         )
 
     def to_dict(self) -> dict:
@@ -116,6 +118,7 @@ class PranaState(object):
             is_output_fan_on=self.is_output_fan_on,
             timestamp=self.timestamp if self.timestamp is not None else None,
             speed=self.speed,
+            brightness=self.brightness,
         )
 
 

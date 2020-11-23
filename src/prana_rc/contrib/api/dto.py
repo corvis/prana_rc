@@ -40,6 +40,7 @@ class PranaStateDTO(pydantic.BaseModel):
     speed_locked: Optional[int] = None
     speed_in: Optional[int] = None
     speed_out: Optional[int] = None
+    brightness: Optional[int] = None
     night_mode: Optional[bool] = None
     auto_mode: Optional[bool] = None
     flows_locked: Optional[bool] = None

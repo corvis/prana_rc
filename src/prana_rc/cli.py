@@ -18,6 +18,7 @@ import argparse
 import asyncio
 import importlib
 import inspect
+import logging
 import pkgutil
 import signal
 from asyncio import CancelledError
@@ -202,6 +203,8 @@ async def handle_wrapper(device_manager: PranaDeviceManager, args):
         pass
     except Exception as e:
         CLI.print_error(e)
+    finally:
+        await device_manager.disconnect_all()
 
 
 async def on_shutdown(signal, loop, device_manager: PranaDeviceManager):
@@ -241,7 +244,7 @@ def discover_cli_extensions(target_package_name: str) -> List[Type]:
 
 
 def run_cli():
-    # logging.basicConfig(level=logging.ERROR)
+    # logging.basicConfig(level=logging.DEBUG)
     root_commands = [
         DiscoveryCLIExtension,
         SetCLIExtension,
