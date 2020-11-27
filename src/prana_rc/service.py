@@ -18,6 +18,7 @@ import asyncio
 import datetime
 import logging
 from asyncio import AbstractEventLoop, Lock
+from math import log2
 
 import bleak
 from typing import Dict, List, Union, Optional
@@ -102,8 +103,20 @@ class PranaDeviceManager(object):
         raise RuntimeError("Connection to device {} failed after {} attempts".format(address, attempts))
 
     async def disconnect_all(self):
-        for dev in self.__managed_devices.values():
-            await dev.disconnect()
+        for addr, dev in list(self.__managed_devices.items()):
+            try:
+                self.__logger.info("Disconnecting {}...".format(dev.address))
+                await dev.disconnect()
+                del self.__managed_devices[addr]
+            except Exception as e:
+                self.__logger.exception("Unable to disconnect device {}: {}".format(dev.address, str(e)))
+
+    def get_connected_devices_addresses(self) -> List[str]:
+        """
+        Returns a list of MAC addresses of the currently connected devices.
+        Note: this method won't verify connection status so it might return 'dead' connections as well.
+        """
+        return list(self.__managed_devices.keys())
 
 
 class PranaDevice(object):
@@ -145,7 +158,7 @@ class PranaDevice(object):
             self.__address = target
         else:
             raise ValueError(
-                "PranaDevice constructor error: Target must be eithermac address or PranaDeviceInfo instance"
+                "PranaDevice constructor error: Target must be either mac address or PranaDeviceInfo instance"
             )
         self.__client = bleak.BleakClient(self.__address, device=iface)
         self.__has_connect_attempts = False
@@ -268,8 +281,11 @@ class PranaDevice(object):
     def __parse_state(self, data: bytearray) -> Optional[PranaState]:
         if not data[:2] == self.STATE_MSG_PREFIX:
             return None
+        self.__logger.debug("State data:")
+        self.__logger.debug("".join("{:02x}".format(x) for x in data))
         s = PranaState()
         s.timestamp = datetime.datetime.now()
+        s.brightness = int(log2(data[12]) + 1)
         s.speed_locked = int(data[26] / 10)
         s.speed_in = int(data[30] / 10)
         s.speed_out = int(data[34] / 10)
@@ -305,3 +321,7 @@ class PranaDevice(object):
             self.__state is None
             or (datetime.datetime.now() - utils.none_throws(self.__state.timestamp)).total_seconds() > 60
         )
+
+    @property
+    def address(self):
+        return self.__address

@@ -113,8 +113,8 @@ setup(
     # Extra dependencies might be installed with:
     # pip install -e .[dev,test]
     extras_require={
-        'server-tornado': ['ws-sizzle[tornado]>=0.0.4'],
-        'client-aio': ['ws-sizzle[aiohttp]>=0.0.6'],
+        'server-tornado': ['ws-sizzle[tornado]>=0.0.7'],
+        'client-aio': ['ws-sizzle[aiohttp]>=0.0.7'],
     },
 
     package_data={

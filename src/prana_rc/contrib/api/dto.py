@@ -17,7 +17,7 @@
 import datetime
 
 import pydantic
-from typing import Optional
+from typing import Optional, List
 
 from prana_rc.entity import Speed, Mode
 
@@ -40,6 +40,7 @@ class PranaStateDTO(pydantic.BaseModel):
     speed_locked: Optional[int] = None
     speed_in: Optional[int] = None
     speed_out: Optional[int] = None
+    brightness: Optional[int] = None
     night_mode: Optional[bool] = None
     auto_mode: Optional[bool] = None
     flows_locked: Optional[bool] = None
@@ -49,3 +50,9 @@ class PranaStateDTO(pydantic.BaseModel):
     is_input_fan_on: Optional[bool] = None
     is_output_fan_on: Optional[bool] = None
     timestamp: Optional[datetime.datetime] = None
+
+
+class PranaHealthCheckResultDTO(pydantic.BaseModel):
+    version: str
+    timestamp: datetime.datetime
+    current_connections: List[str]
