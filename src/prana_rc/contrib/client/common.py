@@ -29,6 +29,7 @@ from prana_rc.contrib.api import (
     PranaStateDTO,
     PranaDeviceInfoDTO,
 )
+from prana_rc.contrib.api.dto import PranaHealthCheckResultDTO
 
 
 class PranaRCAsyncClient(SizzleWsAsyncClient, PranaRCAsyncFacade, metaclass=abc.ABCMeta):
@@ -58,4 +59,10 @@ class PranaRCAsyncClient(SizzleWsAsyncClient, PranaRCAsyncFacade, metaclass=abc.
             await self.async_invoke(
                 "prana.set_state", address, json.loads(state.json()), timeout, expected_response_type=PranaStateDTO
             ),
+        )
+
+    async def healthcheck(self) -> PranaHealthCheckResultDTO:
+        return utils.safe_cast(
+            PranaHealthCheckResultDTO,
+            await self.async_invoke("prana.healthcheck", expected_response_type=PranaHealthCheckResultDTO),
         )

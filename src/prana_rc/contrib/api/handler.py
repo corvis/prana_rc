@@ -14,6 +14,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 from asyncio.events import AbstractEventLoop
 
 from jsonrpc import Dispatcher
@@ -22,7 +23,7 @@ from sizzlews.server.annotation import rpc_method
 from sizzlews.server.common import MethodDiscoveryMixin, SizzleWSHandler
 from typing import List, Optional
 
-from prana_rc import utils
+from prana_rc import utils, __version__
 from prana_rc.contrib.api import (
     PranaRCAsyncFacade,
     DEFAULT_TIMEOUT,
@@ -31,6 +32,7 @@ from prana_rc.contrib.api import (
     PranaStateDTO,
     PranaDeviceInfoDTO,
 )
+from prana_rc.contrib.api.dto import PranaHealthCheckResultDTO
 from prana_rc.entity import Mode, PranaDeviceInfo, PranaState
 from prana_rc.service import PranaDeviceManager, PranaDevice
 
@@ -115,3 +117,11 @@ class PranaRCApiHandler(MethodDiscoveryMixin, SizzleWSHandler, PranaRCAsyncFacad
                 await prana_device.set_high_speed()
         new_state = await prana_device.read_state()
         return utils.none_throws(ToDTO.prana_state(new_state))
+
+    @rpc_method
+    async def healthcheck(self) -> PranaHealthCheckResultDTO:
+        return PranaHealthCheckResultDTO(
+            version=__version__.__version__,
+            timestamp=datetime.datetime.now(),
+            current_connections=self.__device_manager.get_connected_devices_addresses(),
+        )

@@ -110,6 +110,13 @@ class PranaDeviceManager(object):
             except Exception as e:
                 self.__logger.exception("Unable to disconnect device {}: {}".format(dev.address, str(e)))
 
+    def get_connected_devices_addresses(self) -> List[str]:
+        """
+        Returns a list of MAC addresses of the currently connected devices.
+        Note: this method won't verify connection status so it might return 'dead' connections as well.
+        """
+        return list(self.__managed_devices.keys())
+
 
 class PranaDevice(object):
     CONTROL_SERVICE_UUID = "0000baba-0000-1000-8000-00805f9b34fb"
