@@ -125,3 +125,7 @@ class PranaRCApiHandler(MethodDiscoveryMixin, SizzleWSHandler, PranaRCAsyncFacad
             timestamp=datetime.datetime.now(),
             current_connections=self.__device_manager.get_connected_devices_addresses(),
         )
+
+    @rpc_method
+    async def disconnect_all(self) -> None:
+        await self.__device_manager.disconnect_all()

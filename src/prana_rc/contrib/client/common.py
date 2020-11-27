@@ -66,3 +66,6 @@ class PranaRCAsyncClient(SizzleWsAsyncClient, PranaRCAsyncFacade, metaclass=abc.
             PranaHealthCheckResultDTO,
             await self.async_invoke("prana.healthcheck", expected_response_type=PranaHealthCheckResultDTO),
         )
+
+    async def disconnect(self) -> None:
+        await self.async_invoke("prana.disconnect_all")

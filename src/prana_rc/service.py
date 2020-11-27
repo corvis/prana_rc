@@ -103,10 +103,11 @@ class PranaDeviceManager(object):
         raise RuntimeError("Connection to device {} failed after {} attempts".format(address, attempts))
 
     async def disconnect_all(self):
-        for dev in self.__managed_devices.values():
+        for addr, dev in list(self.__managed_devices.items()):
             try:
                 self.__logger.info("Disconnecting {}...".format(dev.address))
                 await dev.disconnect()
+                del self.__managed_devices[addr]
             except Exception as e:
                 self.__logger.exception("Unable to disconnect device {}: {}".format(dev.address, str(e)))
 
