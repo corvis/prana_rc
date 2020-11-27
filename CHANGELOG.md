@@ -1,5 +1,15 @@
 # Changelog
 
+## [v0.3.7](https://github.com/corvis/prana_rc/tree/v0.3.7) (2020-11-27)
+
+**Implemented enhancements:**
+
+- Add "disconnect\_all" method to force termination of the ble connection without server restart [\#12](https://github.com/corvis/prana_rc/issues/12)
+- Add healthcheck api method to query server status and verify connections from the remote client [\#11](https://github.com/corvis/prana_rc/issues/11)
+- Add current brightness value to the device state [\#10](https://github.com/corvis/prana_rc/issues/10)
+
+## [v0.3.6](https://github.com/corvis/prana_rc/tree/v0.3.6) (2020-11-17)
+
 ## [v0.3.5](https://github.com/corvis/prana_rc/tree/v0.3.5) (2020-11-17)
 
 ## [v0.3.4](https://github.com/corvis/prana_rc/tree/v0.3.4) (2020-11-15)
