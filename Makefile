@@ -40,6 +40,13 @@ build: copyright format lint clean
 	@( \
 	   set -e; \
        if [ -z $(SKIP_VENV) ]; then source $(VIRTUAL_ENV_PATH)/bin/activate; fi; \
+       echo "Building client wheel package..."; \
+       bash -c "cd src && VERSION_OVERRIDE="$(ALPHA_VERSION)" python ./client_setup.py bdist_wheel --dist-dir=../dist --bdist-dir=../../build"; \
+       echo "DONE: wheel client package"; \
+    )
+	@( \
+	   set -e; \
+       if [ -z $(SKIP_VENV) ]; then source $(VIRTUAL_ENV_PATH)/bin/activate; fi; \
        echo "Building wheel package..."; \
        bash -c "cd src && VERSION_OVERRIDE="$(ALPHA_VERSION)" python ./setup.py bdist_wheel --dist-dir=../dist --bdist-dir=../../build"; \
        echo "DONE: wheel package"; \
@@ -50,13 +57,6 @@ build: copyright format lint clean
        echo "Building source distribution..."; \
        bash -c "cd src && VERSION_OVERRIDE="$(ALPHA_VERSION)" python ./setup.py sdist --dist-dir=../dist"; \
        echo "DONE: source distribution"; \
-    )
-	@( \
-	   set -e; \
-       if [ -z $(SKIP_VENV) ]; then source $(VIRTUAL_ENV_PATH)/bin/activate; fi; \
-       echo "Building client wheel package..."; \
-       bash -c "cd src && VERSION_OVERRIDE="$(ALPHA_VERSION)" python ./client_setup.py bdist_wheel --dist-dir=../dist --bdist-dir=../../build"; \
-       echo "DONE: wheel client package"; \
     )
 
 clean:
