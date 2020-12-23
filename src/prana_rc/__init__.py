@@ -25,8 +25,6 @@ import logging
 import os
 import sys
 
-from prana_rc import cli
-
 _logger = logging.getLogger(__name__)
 _logger.addHandler(logging.NullHandler())
 _logger.setLevel(logging.DEBUG)
@@ -38,4 +36,5 @@ if bool(os.environ.get("PRANA_LOGGING", False)):
     _logger.addHandler(handler)
 
 if __name__ == "__main__":
+    from prana_rc import cli
     cli.run_cli()
