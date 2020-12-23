@@ -66,6 +66,8 @@ except ImportError:
 included = [
     'prana_rc/__init__.py',
     'prana_rc/__version__.py',
+    'prana_rc/entity.py',
+    'prana_rc/utils.py',
     'prana_rc/contrib/__init__.py',
     'prana_rc/contrib/client/*.py',
     'prana_rc/contrib/api/*.py'
@@ -124,7 +126,7 @@ setup(
     packages=find_packages(include=['prana_rc', 'prana_rc.*']),
 
     install_requires=[
-        'ws-sizzle[aiohttp]>=0.0.7'
+        'ws-sizzle[aiohttp]>=0.0.8'
     ],
 
     # Extra dependencies might be installed with:

@@ -37,4 +37,5 @@ if bool(os.environ.get("PRANA_LOGGING", False)):
 
 if __name__ == "__main__":
     from prana_rc import cli
+
     cli.run_cli()
