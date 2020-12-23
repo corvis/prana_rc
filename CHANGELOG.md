@@ -1,5 +1,7 @@
 # Changelog
 
+## [v0.3.8](https://github.com/corvis/prana_rc/tree/v0.3.8) (2020-12-23)
+
 ## [v0.3.7](https://github.com/corvis/prana_rc/tree/v0.3.7) (2020-11-27)
 
 **Implemented enhancements:**
