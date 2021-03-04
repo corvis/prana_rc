@@ -193,6 +193,7 @@ For baseline prana series (e.g.model 150, 200G) with no any sensors on board:
 
 For models with embedded sensors (e.g. Eco Life, Eco energy series):
 
+```json
 {
    "result":{
       "speed_locked":4,
@@ -211,12 +212,13 @@ For models with embedded sensors (e.g. Eco Life, Eco energy series):
         "temperature_out": 9.6,
         "humidity": 41,
         "pressure": 1010
-      }
+      },
       "timestamp":"2020-11-18T23:14:45.313515"
    },
    "id":1,
    "jsonrpc":"2.0"
 }
+```
 
 ##### Set State
 
@@ -341,7 +343,7 @@ At the moment VOC and CO2 sensors are not supported.
 * Dmitry Berezovsky, author
 * [Bleak](https://github.com/hbldh/bleak), bluetooth client library
 * Contributors:
-    * @francesco-re-1107, eco-energy series support
+    * [@francesco-re-1107](https://github.com/francesco-re-1107), eco-energy series support
 
 # Disclaimer
 This module is licensed under GPL v3. This means you are free to use in non-commercial projects.
