@@ -15,9 +15,6 @@
   <a href="https://github.com/corvis/prana_rc/releases/"><img src="https://img.shields.io/github/release-date/corvis/prana_rc?style=for-the-badge" title="Last Release"/></a> 
 </p>
 
-**DISCLAIMER: This library is under active development now. There is no stable release yet, so please do not 
-use it in your installation unless you are a developer who would like to contribute to module**
-
 Python library and CLI to manage Prana recuperators (https://prana.org.ua/) via BLE interface.
 It provides access to the device API and provides functionality similar to the functionality of the official mobile 
 application with some limitations (see limitation section below).
@@ -27,7 +24,7 @@ application with some limitations (see limitation section below).
 **Features:**
 
 * Read current prana state
-* Control everything which could be managed via an official app with a few exceptions (see limitations section)
+* Control everything which could be managed via an official app with a few exceptions (see [limitations](#limitations) section)
 * Discover not connected devices around
 * Client-server architecture (allows distributed setup)
 * CLI interface available for quick tinkering
@@ -44,9 +41,9 @@ pip install prana-rc[server-tornado]
 
 If you prefer dockerized setup you could run it like this:
 
-​```
-docker run --volume /run/dbus/system_bus_socket:/run/dbus/system_bus_socket  --restart=unless-stopped prana-rc:latest
-​```
+```
+docker run --volume /run/dbus/system_bus_socket:/run/dbus/system_bus_socket -p 8881:8881 --restart=unless-stopped corvis/prana-rc:latest
+```
 
 By default it will run `http-server` command, however you could run any cli commend by addign extra arguments to the 
 end. For example to run discover you could use:
@@ -169,6 +166,9 @@ curl \
 
 ###### Result 
 
+Returns PranaState object.
+For baseline prana series (e.g.model 150, 200G) with no any sensors on board:
+
 ```json
 {
    "result":{
@@ -183,6 +183,36 @@ curl \
       "winter_mode_enabled":false,
       "is_input_fan_on":false,
       "is_output_fan_on":false,
+      "sensors": null,
+      "timestamp":"2020-11-18T23:14:45.313515"
+   },
+   "id":1,
+   "jsonrpc":"2.0"
+}
+```
+
+For models with embedded sensors (e.g. Eco Life, Eco energy series):
+
+```json
+{
+   "result":{
+      "speed_locked":4,
+      "speed_in":4,
+      "speed_out":4,
+      "night_mode":false,
+      "auto_mode":false,
+      "flows_locked":true,
+      "is_on":false,
+      "mini_heating_enabled":false,
+      "winter_mode_enabled":false,
+      "is_input_fan_on":false,
+      "is_output_fan_on":false,
+      "sensors": {
+        "temperature_in": 12.3,
+        "temperature_out": 9.6,
+        "humidity": 41,
+        "pressure": 1010
+      },
       "timestamp":"2020-11-18T23:14:45.313515"
    },
    "id":1,
@@ -225,6 +255,8 @@ curl \
 ```
 
 ###### Result 
+
+Returns the PranaState object. See [Get State](#get-state) method for more details on the object structure.
 
 ```json
 {
@@ -296,17 +328,22 @@ Most likely it is compatible with Prana 150,200G, and Eco Energy series (with a 
 But the confirmed list of models which were verified to work fine is below:
 
 * Prana 150
+* Prana 160 (italian market)
 
 Please, create a ticket if you tested it with another device model so we could extend the list.
 
 # Limitations
 
 * Using device password is not supported
-* Reading information form built-in sensors (for Eco Energy series) is not supported
+* Reading information form built-in sensors (for Eco Energy series) is limited. 
+At the moment VOC and CO2 sensors are not supported.
+* Changing brightness is not supported
 
 # Credits
 * Dmitry Berezovsky, author
 * [Bleak](https://github.com/hbldh/bleak), bluetooth client library
+* Contributors:
+    * [@francesco-re-1107](https://github.com/francesco-re-1107), eco-energy series support
 
 # Disclaimer
 This module is licensed under GPL v3. This means you are free to use in non-commercial projects.
