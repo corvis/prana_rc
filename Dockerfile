@@ -5,7 +5,8 @@ ARG release_date
 ARG is_beta=False
 
 RUN apt-get update --no-install-recommends \
-  && apt-get install -y --no-install-recommends bluez python-cryptography \
+  && apt-get install -y --no-install-recommends bluez \
+  && if [ $(uname -m) != "x86_64" ]; then apt-get install -y --no-install-recommends cargo rustc; fi
   && pip install -U pip \
   && rm -rf /var/lib/apt/lists/*
 
