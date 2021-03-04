@@ -282,7 +282,7 @@ class PranaDevice(object):
         if not data[:2] == self.STATE_MSG_PREFIX:
             return None
         self.__logger.debug("State data:")
-        self.__logger.debug("".join("{:02x}".format(x) for x in data))
+        self.__logger.debug(",".join("0x{:02x}".format(x) for x in data))
         s = PranaState()
         s.timestamp = datetime.datetime.now()
         s.brightness = int(log2(data[12]) + 1)
@@ -297,12 +297,15 @@ class PranaDevice(object):
         s.winter_mode_enabled = bool(data[42])
         s.is_input_fan_on = bool(data[28])
         s.is_output_fan_on = bool(data[32])
-        if len(data) > 60:  # TODO: Check data array for old devices to see if we need this check
-            s.sensors = PranaSensorsState()
-            s.sensors.temperature_in = float(data[49]) / 10
-            s.sensors.temperature_out = float(data[55]) / 10
-            s.sensors.humidity = int(data[60] - 128)
-            s.sensors.pressure = 512 + int(data[78])
+        # Reading sensors
+        sensors = PranaSensorsState()
+        sensors.temperature_in = float(data[49]) / 10
+        sensors.temperature_out = float(data[55]) / 10
+        sensors.humidity = int(data[60] - 128)
+        sensors.pressure = 512 + int(data[78])
+        # Add sensors to the state only in case device has hardware
+        if sensors.humidity > 0:
+            s.sensors = sensors
         return s
 
     async def read_state(self, force_read: bool = False) -> PranaState:
