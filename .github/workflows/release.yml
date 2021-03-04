@@ -101,5 +101,5 @@ jobs:
         release_name: 'Version ${{ github.event.inputs.version }}'
         body: |
           ${{ steps.release_changelog.outputs.content }}
-        draft: true
-        prerelease: false
+        draft: false
+        prerelease: true
