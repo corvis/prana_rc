@@ -5,7 +5,8 @@ ARG release_date
 ARG is_beta=False
 
 RUN apt-get update --no-install-recommends \
-  && apt-get install -y --no-install-recommends bluez \
+  && apt-get install -y --no-install-recommends bluez python-cryptography \
+  && pip install -U pip \
   && rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["prana"]
