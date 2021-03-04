@@ -25,10 +25,10 @@ import logging
 import os
 import sys
 
-_logger = logging.getLogger(__name__)
+_logger = logging.root
 _logger.addHandler(logging.NullHandler())
 _logger.setLevel(logging.DEBUG)
-if bool(os.environ.get("PRANA_LOGGING", False)):
+if os.environ.get("PRANA_LOGGING", '0').lower() in ['yes', 'true', '1']:
     FORMAT = "%(asctime)-15s %(name)-8s %(levelname)s: %(message)s"
     handler = logging.StreamHandler(sys.stdout)
     handler.setLevel(logging.DEBUG)
