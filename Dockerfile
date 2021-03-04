@@ -6,7 +6,7 @@ ARG is_beta=False
 
 RUN apt-get update --no-install-recommends \
   && apt-get install -y --no-install-recommends bluez \
-  && if [ $(uname -m) != "x86_64" ]; then echo -e "[global]\nextra-index-url=https://www.piwheels.org/simple" > /etc/pip.conf; fi \
+  && if [ $(uname -m) != "x86_64" ]; then printf "[global]\nextra-index-url=https://www.piwheels.org/simple" > /etc/pip.conf; fi \
   && pip install -U pip \
   && rm -rf /var/lib/apt/lists/*
 
