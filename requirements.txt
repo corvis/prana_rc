@@ -8,6 +8,7 @@ pydantic>=1.6
 ws-sizzle[tornado,aiohttp]>=0.0.7
 
 # Development dependencies
+pytest==6.2.2
 copyright==1.0.1.0
 twine==1.13.0
 m2r==0.2.1

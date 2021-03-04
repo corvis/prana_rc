@@ -6,7 +6,7 @@ ALPHA_VERSION :=
 
 .DEFAULT_GOAL := pre_commit
 
-pre_commit: copyright format lint
+pre_commit: copyright format lint test
 
 copyright:
 	@( \
@@ -36,6 +36,14 @@ mypy:
 
 lint: flake8 mypy
 
+test:
+	@( \
+	   set -e; \
+       if [ -z $(SKIP_VENV) ]; then source $(VIRTUAL_ENV_PATH)/bin/activate; fi; \
+       echo "Running unit tests..."; \
+       pytest;	\
+       echo "DONE: unit tests"; \
+    )
 build: copyright format lint clean
 	@( \
 	   set -e; \

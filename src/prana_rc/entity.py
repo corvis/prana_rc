@@ -71,6 +71,27 @@ class PranaDeviceInfo(NamedTuple):
     rssi: int
 
 
+class PranaSensorsState(object):
+    def __init__(self) -> None:
+        self.temperature_in: Optional[float] = None
+        self.temperature_out: Optional[float] = None
+        self.humidity: Optional[int] = None
+        self.pressure: Optional[int] = None
+
+    def __repr__(self):
+        return "Temperature: (in: {}, out: {}), Humidity: {}, Preasure: {}".format(
+            self.temperature_in, self.temperature_out, self.humidity, self.pressure
+        )
+
+    def to_dict(self) -> dict:
+        return dict(
+            temperature_in=self.temperature_in,
+            temperature_out=self.temperature_out,
+            humidity=self.humidity,
+            pressure=self.pressure,
+        )
+
+
 class PranaState(object):
     def __init__(self) -> None:
         self.speed_locked: Optional[int] = None
@@ -85,6 +106,7 @@ class PranaState(object):
         self.is_input_fan_on: Optional[bool] = None
         self.is_output_fan_on: Optional[bool] = None
         self.brightness: Optional[int] = None
+        self.sensors: Optional[PranaSensorsState] = None
         self.timestamp: Optional[datetime.datetime] = None
 
     @property
@@ -94,7 +116,7 @@ class PranaState(object):
         return self.speed_locked if self.flows_locked else int((self.speed_in + self.speed_out) / 2)
 
     def __repr__(self):
-        return "Prana state: {}, Speed: {}, Winter Mode: {}, Heating: {}, Flows locked: {}, Brightness: {}".format(
+        res = "Prana state: {}, Speed: {}, Winter Mode: {}, Heating: {}, Flows locked: {}, Brightness: {}".format(
             "RUNNING" if self.is_on else "IDLE",
             self.speed,
             self.winter_mode_enabled,
@@ -102,6 +124,9 @@ class PranaState(object):
             self.flows_locked,
             self.brightness,
         )
+        if self.sensors is not None:
+            res += " Sensors: {" + repr(self.sensors) + "}"
+        return res
 
     def to_dict(self) -> dict:
         return dict(
@@ -119,6 +144,7 @@ class PranaState(object):
             timestamp=self.timestamp if self.timestamp is not None else None,
             speed=self.speed,
             brightness=self.brightness,
+            sensors=self.sensors.to_dict() if self.sensors is not None else None,
         )
 
 

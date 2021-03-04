@@ -36,6 +36,13 @@ class PranaDeviceInfoDTO(pydantic.BaseModel):
     rssi: Optional[int] = None
 
 
+class PranaSensorsStateDTO(pydantic.BaseModel):
+    temperature_in: Optional[float] = None
+    temperature_out: Optional[float] = None
+    humidity: Optional[int] = None
+    pressure: Optional[int] = None
+
+
 class PranaStateDTO(pydantic.BaseModel):
     speed_locked: Optional[int] = None
     speed_in: Optional[int] = None
@@ -49,6 +56,7 @@ class PranaStateDTO(pydantic.BaseModel):
     winter_mode_enabled: Optional[bool] = None
     is_input_fan_on: Optional[bool] = None
     is_output_fan_on: Optional[bool] = None
+    sensors: Optional[PranaSensorsStateDTO] = None
     timestamp: Optional[datetime.datetime] = None
 
 

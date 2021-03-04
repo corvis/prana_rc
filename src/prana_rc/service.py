@@ -24,7 +24,7 @@ import bleak
 from typing import Dict, List, Union, Optional
 
 from prana_rc import utils
-from prana_rc.entity import PranaState, PranaDeviceInfo, Speed
+from prana_rc.entity import PranaState, PranaDeviceInfo, Speed, PranaSensorsState
 
 
 class PranaDeviceManager(object):
@@ -297,6 +297,12 @@ class PranaDevice(object):
         s.winter_mode_enabled = bool(data[42])
         s.is_input_fan_on = bool(data[28])
         s.is_output_fan_on = bool(data[32])
+        if len(data) > 60:  # TODO: Check data array for old devices to see if we need this check
+            s.sensors = PranaSensorsState()
+            s.sensors.temperature_in = float(data[49]) / 10
+            s.sensors.temperature_out = float(data[55]) / 10
+            s.sensors.humidity = int(data[60] - 128)
+            s.sensors.pressure = 512 + int(data[78])
         return s
 
     async def read_state(self, force_read: bool = False) -> PranaState:
