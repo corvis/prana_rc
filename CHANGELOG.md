@@ -1,5 +1,17 @@
 # Changelog
 
+## [v0.4.0](https://github.com/corvis/prana_rc/tree/v0.4.0) (2021-03-04)
+
+**Implemented enhancements:**
+
+- Implement Eco Energy series support \(temperature, humidity sensors\) [\#14](https://github.com/corvis/prana_rc/issues/14)
+
+**Fixed bugs:**
+
+- Fix logger to support enable extensive logging via env. variable [\#15](https://github.com/corvis/prana_rc/issues/15)
+
+## [v0.3.11](https://github.com/corvis/prana_rc/tree/v0.3.11) (2020-12-23)
+
 ## [v0.3.9](https://github.com/corvis/prana_rc/tree/v0.3.9) (2020-12-23)
 
 ## [v0.3.8](https://github.com/corvis/prana_rc/tree/v0.3.8) (2020-12-23)
