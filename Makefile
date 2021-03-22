@@ -4,6 +4,7 @@ PYPI_API_KEY :=
 PYPI_REPOSITORY_URL :=
 ALPHA_VERSION :=
 
+SHELL := /bin/bash
 .DEFAULT_GOAL := pre_commit
 
 pre_commit: copyright format lint test
