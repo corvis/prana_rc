@@ -1,6 +1,4 @@
 bleak>=0.9.1
-service_identity>=18.0.0
-
 
 # API packages
 pydantic>=1.6

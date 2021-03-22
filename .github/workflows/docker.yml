@@ -56,7 +56,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          platforms: linux/amd64,linux/arm/v7
+          platforms: linux/amd64,linux/arm/v7,linux/arm/v6
           push: true
           build-args: |
             prana_version=${{ env.VERSION }}

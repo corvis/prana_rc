@@ -95,3 +95,10 @@ set-version:
 		echo '__version__ = "$(VERSION)"' > ./src/prana_rc/__version__.py; \
 		echo "Version updated: $(VERSION)"; \
 	)
+
+venv:
+	@( \
+		virtualenv $(VIRTUAL_ENV_PATH); \
+		source ./venv/bin/activate; \
+		pip install -r ./requirements.txt; \
+	)

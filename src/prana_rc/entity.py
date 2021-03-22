@@ -77,11 +77,13 @@ class PranaSensorsState(object):
         self.temperature_out: Optional[float] = None
         self.humidity: Optional[int] = None
         self.pressure: Optional[int] = None
+        self.voc: Optional[int] = None
+        self.co2: Optional[int] = None
 
     def __repr__(self):
-        return "Temperature: (in: {}, out: {}), Humidity: {}, Preasure: {}".format(
-            self.temperature_in, self.temperature_out, self.humidity, self.pressure
-        )
+        return "Temperature: (in: {}, out: {}), Humidity: {}, Pressure: {}".format(
+            self.temperature_in, self.temperature_out, self.humidity, self.pressure, self.voc, self.co2
+        ) + ", VOC: {}, CO2: {}".format(self.voc, self.co2) if self.co2 or self.voc else ""
 
     def to_dict(self) -> dict:
         return dict(
@@ -89,6 +91,8 @@ class PranaSensorsState(object):
             temperature_out=self.temperature_out,
             humidity=self.humidity,
             pressure=self.pressure,
+            voc=self.voc,
+            co2=self.co2,
         )
 
 

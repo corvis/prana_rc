@@ -17,6 +17,7 @@
 import asyncio
 import datetime
 import logging
+import struct
 from asyncio import AbstractEventLoop, Lock
 from math import log2
 
@@ -299,10 +300,13 @@ class PranaDevice(object):
         s.is_output_fan_on = bool(data[32])
         # Reading sensors
         sensors = PranaSensorsState()
-        sensors.temperature_in = float(data[49]) / 10
-        sensors.temperature_out = float(data[55]) / 10
+        sensors.temperature_in = float(struct.unpack_from(">h", data, 54)[0] & 0b0011111111111111) / 10.0
+        sensors.temperature_out = float(struct.unpack_from(">h", data, 51)[0] & 0b0011111111111111) / 10.0
         sensors.humidity = int(data[60] - 128)
         sensors.pressure = 512 + int(data[78])
+        # co2 and voc
+        sensors.co2 = int(struct.unpack_from(">h", data, 61)[0] & 0b0011111111111111)
+        sensors.voc = int(struct.unpack_from(">h", data, 63)[0] & 0b0011111111111111)
         # Add sensors to the state only in case device has hardware
         if sensors.humidity > 0:
             s.sensors = sensors
