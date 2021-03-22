@@ -33,6 +33,14 @@ application with some limitations (see limitation section below).
 
 ### Server component
 
+#### Prerequisites
+
+For Linux hosts:
+
+* Make sure you have Bluez component installed. E.g. on debian based systems you can use `sudo apt-get install bluez`
+
+#### Installation
+
 The easiest way is to use pip. To install the recent version with HTTP API support run:
 
 ```
