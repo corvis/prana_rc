@@ -1,5 +1,15 @@
 # Changelog
 
+## [v0.4.1](https://github.com/corvis/prana_rc/tree/v0.4.1) (2021-03-22)
+
+**Implemented enhancements:**
+
+- VOC and CO2 sensors support [\#18](https://github.com/corvis/prana_rc/issues/18)
+
+**Fixed bugs:**
+
+- Incorrect sensor readings [\#21](https://github.com/corvis/prana_rc/issues/21)
+
 ## [v0.4.0](https://github.com/corvis/prana_rc/tree/v0.4.0) (2021-03-04)
 
 **Implemented enhancements:**
