@@ -56,7 +56,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          platforms: linux/amd64,linux/arm/v6,linux/arm/v7
+          platforms: linux/amd64,linux/arm/v7,linux/arm/v6
           push: true
           build-args: |
             prana_version=${{ env.VERSION }}
@@ -66,9 +66,9 @@ jobs:
             corvis/prana-rc:latest
             corvis/prana-rc:${{ env.VERSION }}
 
-      - name: Update repo description
-        uses: peter-evans/dockerhub-description@v2.4.1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: corvis/prana-rc
+#      - name: Update repo description
+#        uses: peter-evans/dockerhub-description@v2.4.1
+#        with:
+#          username: ${{ secrets.DOCKERHUB_USERNAME }}
+#          password: ${{ secrets.DOCKERHUB_TOKEN }}
+#          repository: corvis/prana-rc

@@ -41,6 +41,8 @@ class PranaSensorsStateDTO(pydantic.BaseModel):
     temperature_out: Optional[float] = None
     humidity: Optional[int] = None
     pressure: Optional[int] = None
+    voc: Optional[int] = None
+    co2: Optional[int] = None
 
 
 class PranaStateDTO(pydantic.BaseModel):

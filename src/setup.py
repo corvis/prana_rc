@@ -97,6 +97,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
     python_requires='>3.6',
 
@@ -107,7 +108,6 @@ setup(
     install_requires=[
         'bleak==0.9.1',
         'typing>=3.6',
-        'service_identity>=18.0.0',
     ],
 
     # Extra dependencies might be installed with:
