@@ -31,7 +31,7 @@ from prana_rc.cli_utils import (
     CLI,
     parse_bool_val,
     parse_speed_str,
-)
+    parse_brightness_value)
 from prana_rc.entity import Mode
 from prana_rc.service import PranaDeviceManager
 
@@ -146,9 +146,18 @@ class SetCLIExtension(CliExtension):
             type=parse_bool_val,
             help="Enable or disable heating (mini-heating function in device manual)",
         )
+        parser.add_argument(
+            "-b",
+            "--brightness",
+            dest="brightness",
+            action="store",
+            required=False,
+            type=parse_brightness_value,
+            help="Set brightness (value between 1 and 6)",
+        )
 
     async def handle(self, args: argparse.Namespace):
-        features = [args.speed, args.mode, args.winter_mode, args.heating]
+        features = [args.speed, args.mode, args.winter_mode, args.heating, args.brightness]
         if all(v is None for v in features):
             raise ValueError("At least one parameter must be set. Check your arguments.")
         device = await self.connect_to_device(args)
@@ -169,6 +178,9 @@ class SetCLIExtension(CliExtension):
                 await device.set_normal_speed()
             elif args.mode == Mode.HIGH:
                 await device.set_high_speed()
+        if args.brightness is not None:
+            CLI.print_info("Setting brightness to {}...".format(args.brightness))
+            await device.set_brightness(args.brightness)
 
         # At the end let's print the new state
         state = await device.read_state()

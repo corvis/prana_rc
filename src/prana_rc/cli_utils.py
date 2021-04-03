@@ -21,7 +21,6 @@ import sys
 import traceback
 from asyncio import AbstractEventLoop, CancelledError
 from enum import Enum
-
 from typing import Optional
 
 from prana_rc.entity import Speed, PranaState
@@ -85,10 +84,10 @@ class CliExtension(object):
     COMMAND_DESCRIPTION: Optional[str] = None
 
     def __init__(
-        self,
-        parser: argparse.ArgumentParser,
-        device_manager: PranaDeviceManager,
-        loop: AbstractEventLoop,
+            self,
+            parser: argparse.ArgumentParser,
+            device_manager: PranaDeviceManager,
+            loop: AbstractEventLoop,
     ):
         super().__init__()
         self.parser = parser
@@ -202,3 +201,11 @@ def parse_bool_val(v: str) -> bool:
 
 def parse_speed_str(v: str) -> Speed:
     return Speed.from_str(v)
+
+
+def parse_brightness_value(v: str) -> int:
+    if not isinstance(v, int):
+        v = int(v)
+    if v < 1 or v > 6:
+        raise argparse.ArgumentTypeError("Brightness value should be between 1 and 6.")
+    return v

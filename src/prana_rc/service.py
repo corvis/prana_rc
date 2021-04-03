@@ -20,9 +20,10 @@ import logging
 import struct
 from asyncio import AbstractEventLoop, Lock
 from math import log2
+from typing import Dict, List, Union, Optional
 
 import bleak
-from typing import Dict, List, Union, Optional
+from bleak.exc import BleakDBusError
 
 from prana_rc import utils
 from prana_rc.entity import PranaState, PranaDeviceInfo, Speed, PranaSensorsState
@@ -124,6 +125,7 @@ class PranaDevice(object):
     CONTROL_SERVICE_UUID = "0000baba-0000-1000-8000-00805f9b34fb"
     CONTROL_RW_CHARACTERISTIC_UUID = "0000cccc-0000-1000-8000-00805f9b34fb"
     STATE_MSG_PREFIX = b"\xbe\xef"
+    MAX_BRIGHTNESS = 6
 
     class Cmd:
         ENABLE_HIGH_SPEED = bytearray([0xBE, 0xEF, 0x04, 0x07])
@@ -145,12 +147,13 @@ class PranaDevice(object):
         STOP = bytearray([0xBE, 0xEF, 0x04, 0x01])
         READ_STATE = bytearray([0xBE, 0xEF, 0x05, 0x01, 0x00, 0x00, 0x00, 0x00, 0x5A])
         READ_DEVICE_DETAILS = bytearray([0xBE, 0xEF, 0x05, 0x02, 0x00, 0x00, 0x00, 0x00, 0x5A])
+        CHANGE_BRIGHTNESS = bytearray([0xBE, 0xEF, 0x04, 0x02])
 
     def __init__(
-        self,
-        target: Union[str, PranaDeviceInfo],
-        loop: Optional[AbstractEventLoop] = None,
-        iface: str = "hci0",
+            self,
+            target: Union[str, PranaDeviceInfo],
+            loop: Optional[AbstractEventLoop] = None,
+            iface: str = "hci0",
     ) -> None:
         self.__address = None
         if isinstance(target, PranaDeviceInfo):
@@ -161,13 +164,17 @@ class PranaDevice(object):
             raise ValueError(
                 "PranaDevice constructor error: Target must be either mac address or PranaDeviceInfo instance"
             )
-        self.__client = bleak.BleakClient(self.__address, device=iface)
+        self.__iface = iface
+        self.__client = self.__new_client()
         self.__has_connect_attempts = False
         self.__notification_bytes: Optional[bytearray] = None
         self.__state: Optional[PranaState] = None
         self.__read_state_event: Optional[asyncio.Event] = None
         self.__lock = Lock()
         self.__logger = logging.getLogger(self.__class__.__name__)
+
+    def __new_client(self) -> bleak.BleakClient:
+        return bleak.BleakClient(self.__address, device=self.__iface)
 
     async def __verify_connected(self):
         if not await self.is_connected():
@@ -183,8 +190,13 @@ class PranaDevice(object):
     async def connect(self, timeout: float = 2):
         async with self.__lock:
             if not await self.is_connected():
-                await self.__client.connect(timeout=timeout)
-                self.__has_connect_attempts = True
+                try:
+                    await self.__client.connect(timeout=timeout)
+                    self.__has_connect_attempts = True
+                except BleakDBusError:
+                    await self.__client.disconnect()
+                    self.__client = self.__client = self.__new_client()
+                    raise
                 await self.__client.start_notify(self.CONTROL_RW_CHARACTERISTIC_UUID, self.notification_handler)
                 # TODO: shall we subscribe for disconnect callback and change status?
                 # TODO: Verify prana service exists to ensure it is prana device
@@ -262,6 +274,22 @@ class PranaDevice(object):
                     await self.speed_down()
                     counter -= 1
 
+    async def set_brightness(self, brightness: int):
+        original_state = await self.read_state()
+        if brightness == original_state.brightness:
+            return
+        if brightness > original_state.brightness:
+            counter = brightness - original_state.brightness
+        else:
+            counter = brightness + (self.MAX_BRIGHTNESS - original_state.brightness)
+        while counter > 0:
+            await self.brightness_up()
+            counter -= 1
+
+    async def brightness_up(self):
+        await self.__verify_connected()
+        await self._send_command(self.Cmd.CHANGE_BRIGHTNESS)
+
     async def set_heating(self, enable: bool):
         state = await self.read_state()
         if state.mini_heating_enabled != enable:
@@ -336,8 +364,8 @@ class PranaDevice(object):
 
     def __has_relevant_state(self) -> bool:
         return not (
-            self.__state is None
-            or (datetime.datetime.now() - utils.none_throws(self.__state.timestamp)).total_seconds() > 60
+                self.__state is None
+                or (datetime.datetime.now() - utils.none_throws(self.__state.timestamp)).total_seconds() > 60
         )
 
     @property
