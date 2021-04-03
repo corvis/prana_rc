@@ -31,7 +31,8 @@ from prana_rc.cli_utils import (
     CLI,
     parse_bool_val,
     parse_speed_str,
-    parse_brightness_value)
+    parse_brightness_value,
+)
 from prana_rc.entity import Mode
 from prana_rc.service import PranaDeviceManager
 

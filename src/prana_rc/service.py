@@ -27,6 +27,7 @@ from bleak.exc import BleakDBusError
 
 from prana_rc import utils
 from prana_rc.entity import PranaState, PranaDeviceInfo, Speed, PranaSensorsState
+from prana_rc.utils import none_throws
 
 
 class PranaDeviceManager(object):
@@ -150,10 +151,10 @@ class PranaDevice(object):
         CHANGE_BRIGHTNESS = bytearray([0xBE, 0xEF, 0x04, 0x02])
 
     def __init__(
-            self,
-            target: Union[str, PranaDeviceInfo],
-            loop: Optional[AbstractEventLoop] = None,
-            iface: str = "hci0",
+        self,
+        target: Union[str, PranaDeviceInfo],
+        loop: Optional[AbstractEventLoop] = None,
+        iface: str = "hci0",
     ) -> None:
         self.__address = None
         if isinstance(target, PranaDeviceInfo):
@@ -275,16 +276,29 @@ class PranaDevice(object):
                     counter -= 1
 
     async def set_brightness(self, brightness: int):
+        if brightness < 0 or brightness > 6:
+            raise ValueError("brightness value must be in range 0-6")
         original_state = await self.read_state()
-        if brightness == original_state.brightness:
+        original_brightness = none_throws(original_state.brightness)
+        if brightness == original_brightness:
             return
-        if brightness > original_state.brightness:
-            counter = brightness - original_state.brightness
+        if brightness > original_brightness:
+            counter = brightness - original_brightness
         else:
-            counter = brightness + (self.MAX_BRIGHTNESS - original_state.brightness)
+            counter = brightness + (self.MAX_BRIGHTNESS - original_brightness)
         while counter > 0:
             await self.brightness_up()
             counter -= 1
+
+    async def set_brightness_pct(self, brightness_pct: int):
+        """
+        Set brightness in percents (0-100)
+        :param brightness_pct: integer in 0-100 range
+        :return:
+        """
+        if brightness_pct < 0 or brightness_pct > 100:
+            raise ValueError("brightness_pct is percent value (range 0-100)")
+        return await self.set_brightness(round(self.MAX_BRIGHTNESS * brightness_pct / 100))
 
     async def brightness_up(self):
         await self.__verify_connected()
@@ -364,8 +378,8 @@ class PranaDevice(object):
 
     def __has_relevant_state(self) -> bool:
         return not (
-                self.__state is None
-                or (datetime.datetime.now() - utils.none_throws(self.__state.timestamp)).total_seconds() > 60
+            self.__state is None
+            or (datetime.datetime.now() - utils.none_throws(self.__state.timestamp)).total_seconds() > 60
         )
 
     @property

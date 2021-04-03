@@ -84,10 +84,10 @@ class CliExtension(object):
     COMMAND_DESCRIPTION: Optional[str] = None
 
     def __init__(
-            self,
-            parser: argparse.ArgumentParser,
-            device_manager: PranaDeviceManager,
-            loop: AbstractEventLoop,
+        self,
+        parser: argparse.ArgumentParser,
+        device_manager: PranaDeviceManager,
+        loop: AbstractEventLoop,
     ):
         super().__init__()
         self.parser = parser
@@ -204,8 +204,7 @@ def parse_speed_str(v: str) -> Speed:
 
 
 def parse_brightness_value(v: str) -> int:
-    if not isinstance(v, int):
-        v = int(v)
-    if v < 1 or v > 6:
+    v_int: int = int(v) if not isinstance(v, int) else v
+    if v_int < 1 or v_int > 6:
         raise argparse.ArgumentTypeError("Brightness value should be between 1 and 6.")
-    return v
+    return v_int
