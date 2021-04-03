@@ -91,7 +91,7 @@ class PranaRCApiHandler(MethodDiscoveryMixin, SizzleWSHandler, PranaRCAsyncFacad
 
     @rpc_method
     @validate_arguments
-    async def set_state(  # noqa: C901
+    async def set_state(
         self,
         address: str,
         state: SetStateDTO,
