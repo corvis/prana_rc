@@ -1,5 +1,18 @@
 # Changelog
 
+## [v0.4.4](https://github.com/corvis/prana_rc/tree/v0.4.4) (2021-04-06)
+
+**Fixed bugs:**
+
+- Prevent multiple simultaneous connection attempts to different devices [\#27](https://github.com/corvis/prana_rc/issues/27)
+
+**Closed issues:**
+
+- Docs: Describe sensors [\#26](https://github.com/corvis/prana_rc/issues/26)
+- Docs: Describe SetState object structure [\#25](https://github.com/corvis/prana_rc/issues/25)
+
+## [v0.4.3](https://github.com/corvis/prana_rc/tree/v0.4.3) (2021-04-06)
+
 ## [v0.4.2](https://github.com/corvis/prana_rc/tree/v0.4.2) (2021-04-06)
 
 **Implemented enhancements:**
