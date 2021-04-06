@@ -191,6 +191,7 @@ For baseline prana series (e.g.model 150, 200G) with no any sensors on board:
       "winter_mode_enabled":false,
       "is_input_fan_on":false,
       "is_output_fan_on":false,
+      "brightness": 6,
       "sensors": null,
       "timestamp":"2020-11-18T23:14:45.313515"
    },
@@ -219,7 +220,9 @@ For models with embedded sensors (e.g. Eco Life, Eco energy series):
         "temperature_in": 12.3,
         "temperature_out": 9.6,
         "humidity": 41,
-        "pressure": 1010
+        "pressure": 1010,
+        "voc": 632.5,
+        "co2": 651.1 
       },
       "timestamp":"2020-11-18T23:14:45.313515"
    },
@@ -237,9 +240,24 @@ For models with embedded sensors (e.g. Eco Life, Eco energy series):
 | Name                  | Type        | Required | Description                                                         |
 | --------------------- | ----------- |-------   | ------------------------------------------------------------------- |
 | address               | string      | yes      | Mac address of the device to communicate with. Could be obtained from `prana.discover` query result  |
-| state                 | object      | yes      | State to set for the device. The structure is listed below              |
+| state                 | object      | yes      | State to set for the device. The structure is [listed below](#set-state-object-structure)            |
 | timeout               | int         | no       | Time in seconds to wait for successful command execution. <br> Default: 4s. |
 | attempts              | int         | no       | Number of connection attempts to make before the failure <br> Default: 5. |
+
+###### Set State Object Structure
+
+The following properties could be set via [Set State](#set-state)
+
+| Name                  | Type        | Required | Description                                                         |
+| --------------------- | ----------- |-------   | ------------------------------------------------------------------- |
+| speed                 | string      | no       | Either string representing integer (0-10) or one of `"low", "l", "high", "h", "off", "stop", "2", "3", "4", "5", "6", "7", "8", "9"`  |
+| mode                  | string      | no       | One of `normal, night, high`. It doesn't seem to have any practical               |
+| winter_mode           | bool        | no       | Enable\disable winter mode (anti-frost) |
+| heating               | bool        | no       | Enable\disable heating |
+| brightness            | int         | no       | Set brightness. Should be an integer in a range of 1-6. See also`brightness_pct` |
+| brightness_pct        | int         | no       | Set brightness in percent (0-100). Note: it's impossible to turn off screen so 0 will mean brightness level `1` |
+
+**Note**: You should specify either `brightness` or `brightness_pct` but not both at the same time.
 
 **Example**
 
@@ -269,18 +287,20 @@ Returns the PranaState object. See [Get State](#get-state) method for more detai
 ```json
 {
    "result":{
-      "speed_locked":4,
-      "speed_in":4,
-      "speed_out":4,
-      "night_mode":false,
-      "auto_mode":false,
-      "flows_locked":true,
-      "is_on":false,
-      "mini_heating_enabled":false,
-      "winter_mode_enabled":false,
-      "is_input_fan_on":false,
-      "is_output_fan_on":false,
-      "timestamp":"2020-11-18T23:14:45.313515"
+        "speed_locked": 1,
+        "speed_in": 1,
+        "speed_out": 1,
+        "brightness": 6,
+        "night_mode": true,
+        "auto_mode": false,
+        "flows_locked": true,
+        "is_on": true,
+        "mini_heating_enabled": false,
+        "winter_mode_enabled": false,
+        "is_input_fan_on": true,
+        "is_output_fan_on": true,
+        "sensors": null,
+        "timestamp": "2021-04-06T20:39:15.516925"
    },
    "id":1,
    "jsonrpc":"2.0"
