@@ -21,7 +21,7 @@ from typing import List
 from prana_rc.contrib.api.dto import SetStateDTO, PranaDeviceInfoDTO, PranaStateDTO
 
 DEFAULT_TIMEOUT = 5
-DEFAULT_ATTEMPTS = 5
+DEFAULT_ATTEMPTS = 10
 
 
 class PranaRCAsyncFacade(abc.ABC):
