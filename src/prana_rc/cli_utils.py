@@ -21,7 +21,6 @@ import sys
 import traceback
 from asyncio import AbstractEventLoop, CancelledError
 from enum import Enum
-
 from typing import Optional
 
 from prana_rc.entity import Speed, PranaState
@@ -202,3 +201,10 @@ def parse_bool_val(v: str) -> bool:
 
 def parse_speed_str(v: str) -> Speed:
     return Speed.from_str(v)
+
+
+def parse_brightness_value(v: str) -> int:
+    v_int: int = int(v) if not isinstance(v, int) else v
+    if v_int < 1 or v_int > 6:
+        raise argparse.ArgumentTypeError("Brightness value should be between 1 and 6.")
+    return v_int

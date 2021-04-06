@@ -20,12 +20,14 @@ import logging
 import struct
 from asyncio import AbstractEventLoop, Lock
 from math import log2
+from typing import Dict, List, Union, Optional
 
 import bleak
-from typing import Dict, List, Union, Optional
+from bleak.exc import BleakDBusError
 
 from prana_rc import utils
 from prana_rc.entity import PranaState, PranaDeviceInfo, Speed, PranaSensorsState
+from prana_rc.utils import none_throws
 
 
 class PranaDeviceManager(object):
@@ -124,6 +126,7 @@ class PranaDevice(object):
     CONTROL_SERVICE_UUID = "0000baba-0000-1000-8000-00805f9b34fb"
     CONTROL_RW_CHARACTERISTIC_UUID = "0000cccc-0000-1000-8000-00805f9b34fb"
     STATE_MSG_PREFIX = b"\xbe\xef"
+    MAX_BRIGHTNESS = 6
 
     class Cmd:
         ENABLE_HIGH_SPEED = bytearray([0xBE, 0xEF, 0x04, 0x07])
@@ -145,6 +148,7 @@ class PranaDevice(object):
         STOP = bytearray([0xBE, 0xEF, 0x04, 0x01])
         READ_STATE = bytearray([0xBE, 0xEF, 0x05, 0x01, 0x00, 0x00, 0x00, 0x00, 0x5A])
         READ_DEVICE_DETAILS = bytearray([0xBE, 0xEF, 0x05, 0x02, 0x00, 0x00, 0x00, 0x00, 0x5A])
+        CHANGE_BRIGHTNESS = bytearray([0xBE, 0xEF, 0x04, 0x02])
 
     def __init__(
         self,
@@ -161,13 +165,17 @@ class PranaDevice(object):
             raise ValueError(
                 "PranaDevice constructor error: Target must be either mac address or PranaDeviceInfo instance"
             )
-        self.__client = bleak.BleakClient(self.__address, device=iface)
+        self.__iface = iface
+        self.__client = self.__new_client()
         self.__has_connect_attempts = False
         self.__notification_bytes: Optional[bytearray] = None
         self.__state: Optional[PranaState] = None
         self.__read_state_event: Optional[asyncio.Event] = None
         self.__lock = Lock()
         self.__logger = logging.getLogger(self.__class__.__name__)
+
+    def __new_client(self) -> bleak.BleakClient:
+        return bleak.BleakClient(self.__address, device=self.__iface)
 
     async def __verify_connected(self):
         if not await self.is_connected():
@@ -183,8 +191,13 @@ class PranaDevice(object):
     async def connect(self, timeout: float = 2):
         async with self.__lock:
             if not await self.is_connected():
-                await self.__client.connect(timeout=timeout)
-                self.__has_connect_attempts = True
+                try:
+                    await self.__client.connect(timeout=timeout)
+                    self.__has_connect_attempts = True
+                except BleakDBusError:
+                    await self.__client.disconnect()
+                    self.__client = self.__client = self.__new_client()
+                    raise
                 await self.__client.start_notify(self.CONTROL_RW_CHARACTERISTIC_UUID, self.notification_handler)
                 # TODO: shall we subscribe for disconnect callback and change status?
                 # TODO: Verify prana service exists to ensure it is prana device
@@ -197,7 +210,7 @@ class PranaDevice(object):
         if not self.__has_connect_attempts:
             return False
         try:
-            return await self.__client.is_connected()
+            return self.__client.is_connected
         except Exception:
             self.__logger.error("Is Connected: Failed to verify connection status")
             return False
@@ -262,6 +275,35 @@ class PranaDevice(object):
                     await self.speed_down()
                     counter -= 1
 
+    async def set_brightness(self, brightness: int):
+        if brightness < 0 or brightness > 6:
+            raise ValueError("brightness value must be in range 0-6")
+        original_state = await self.read_state()
+        original_brightness = none_throws(original_state.brightness)
+        if brightness == original_brightness:
+            return
+        if brightness > original_brightness:
+            counter = brightness - original_brightness
+        else:
+            counter = brightness + (self.MAX_BRIGHTNESS - original_brightness)
+        while counter > 0:
+            await self.brightness_up()
+            counter -= 1
+
+    async def set_brightness_pct(self, brightness_pct: int):
+        """
+        Set brightness in percents (0-100)
+        :param brightness_pct: integer in 0-100 range
+        :return:
+        """
+        if brightness_pct < 0 or brightness_pct > 100:
+            raise ValueError("brightness_pct is percent value (range 0-100)")
+        return await self.set_brightness(round(self.MAX_BRIGHTNESS * brightness_pct / 100))
+
+    async def brightness_up(self):
+        await self.__verify_connected()
+        await self._send_command(self.Cmd.CHANGE_BRIGHTNESS)
+
     async def set_heating(self, enable: bool):
         state = await self.read_state()
         if state.mini_heating_enabled != enable:
@@ -300,13 +342,18 @@ class PranaDevice(object):
         s.is_output_fan_on = bool(data[32])
         # Reading sensors
         sensors = PranaSensorsState()
-        sensors.temperature_in = float(struct.unpack_from(">h", data, 54)[0] & 0b0011111111111111) / 10.0
-        sensors.temperature_out = float(struct.unpack_from(">h", data, 51)[0] & 0b0011111111111111) / 10.0
         sensors.humidity = int(data[60] - 128)
         sensors.pressure = 512 + int(data[78])
         # co2 and voc
         sensors.co2 = int(struct.unpack_from(">h", data, 61)[0] & 0b0011111111111111)
         sensors.voc = int(struct.unpack_from(">h", data, 63)[0] & 0b0011111111111111)
+        if 0 < sensors.co2 < 10000:
+            # Different version of firmware ???
+            sensors.temperature_in = float(struct.unpack_from(">h", data, 51)[0] & 0b0011111111111111) / 10.0
+            sensors.temperature_out = float(struct.unpack_from(">h", data, 54)[0] & 0b0011111111111111) / 10.0
+        else:
+            sensors.temperature_in = float(data[49]) / 10
+            sensors.temperature_out = float(data[55]) / 10
         # Add sensors to the state only in case device has hardware
         if sensors.humidity > 0:
             s.sensors = sensors

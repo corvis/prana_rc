@@ -27,6 +27,8 @@ class SetStateDTO(pydantic.BaseModel):
     mode: Optional[Mode] = None
     winter_mode: Optional[bool] = None
     heating: Optional[bool] = None
+    brightness: Optional[int] = None
+    brightness_pct: Optional[int] = None
 
 
 class PranaDeviceInfoDTO(pydantic.BaseModel):

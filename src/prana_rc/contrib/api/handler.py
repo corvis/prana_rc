@@ -98,7 +98,7 @@ class PranaRCApiHandler(MethodDiscoveryMixin, SizzleWSHandler, PranaRCAsyncFacad
         timeout=DEFAULT_TIMEOUT,
         attempts=DEFAULT_ATTEMPTS,
     ) -> PranaStateDTO:
-        features = [state.speed, state.mode, state.winter_mode, state.heating]
+        features = [state.speed, state.mode, state.winter_mode, state.heating, state.brightness, state.brightness_pct]
         if all(v is None for v in features):
             raise ValueError("At least one parameter must be set. Check your arguments.")
         prana_device = await self.get_connected_prana_device(address, timeout, attempts)
@@ -115,6 +115,13 @@ class PranaRCApiHandler(MethodDiscoveryMixin, SizzleWSHandler, PranaRCAsyncFacad
                 await prana_device.set_normal_speed()
             elif state.mode == Mode.HIGH:
                 await prana_device.set_high_speed()
+        if state.brightness is not None or state.brightness_pct is not None:
+            if state.brightness is not None and state.brightness_pct is not None:
+                raise ValueError('Use either "brightness" or "brightness_pct" but not both at the same time.')
+            if state.brightness is not None:
+                await prana_device.set_brightness(state.brightness)
+            if state.brightness_pct is not None:
+                await prana_device.set_brightness_pct(state.brightness_pct)
         new_state = await prana_device.read_state()
         return utils.none_throws(ToDTO.prana_state(new_state))
 

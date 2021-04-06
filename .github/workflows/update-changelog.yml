@@ -22,13 +22,17 @@ jobs:
       id: generate_changelog
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        unreleasedOnly: true
+
         issues: true
         headerLabel: Changes
         stripGeneratorNotice: true
         stripHeaders: true
+        output: UNRELEASED_CHANGELOG.md
         unreleasedLabel: ''
 #        addSections: '{ "notable-change": {"prefix": "**NotableChanges:**", "labels": ["notable-change"]} }'
+
+    - name: Output
+      run: echo "::group::Changelog"; cat UNRELEASED_CHANGELOG.md; echo "::endgroup::"
 
 
 #    - name: Commit changelog
