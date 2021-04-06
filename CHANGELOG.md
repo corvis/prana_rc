@@ -1,5 +1,15 @@
 # Changelog
 
+## [v0.4.2](https://github.com/corvis/prana_rc/tree/v0.4.2) (2021-04-06)
+
+**Implemented enhancements:**
+
+- Ability to control display brightness [\#19](https://github.com/corvis/prana_rc/issues/19)
+
+**Fixed bugs:**
+
+- Multiple re-connection attempts some times lead to command failure [\#24](https://github.com/corvis/prana_rc/issues/24)
+
 ## [v0.4.1](https://github.com/corvis/prana_rc/tree/v0.4.1) (2021-03-22)
 
 **Implemented enhancements:**
