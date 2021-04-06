@@ -354,7 +354,7 @@ class PranaDevice(object):
         else:
             sensors.temperature_in = float(data[49]) / 10
             sensors.temperature_out = float(data[55]) / 10
-        # Add sensors to the state only in case device has hardware
+        # Add sensors to the state only in case device has corresponding hardware
         if sensors.humidity > 0:
             s.sensors = sensors
         return s
