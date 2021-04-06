@@ -32,7 +32,6 @@ jobs:
 #        addSections: '{ "notable-change": {"prefix": "**NotableChanges:**", "labels": ["notable-change"]} }'
 
     - name: Output
-      id: Print change log
       run: echo "::group::Changelog"; cat UNRELEASED_CHANGELOG.md; echo "::endgroup::"
 
 
