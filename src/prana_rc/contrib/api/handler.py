@@ -15,6 +15,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
+from asyncio import Lock
 from asyncio.events import AbstractEventLoop
 
 from jsonrpc import Dispatcher
@@ -71,12 +72,14 @@ class PranaRCApiHandler(MethodDiscoveryMixin, SizzleWSHandler, PranaRCAsyncFacad
         self.__device_manager = device_manager
         # self.__devices_pool = {}  # type: Dict[str, PranaDevice]
         self.__loop = loop
+        self.__lock = Lock()
 
     async def get_connected_prana_device(
         self, device_addr: str, timeout=DEFAULT_TIMEOUT, attempts=DEFAULT_ATTEMPTS
     ) -> PranaDevice:
-        prana_device = await self.__device_manager.connect(device_addr, timeout, attempts)
-        return prana_device
+        async with self.__lock:
+            prana_device = await self.__device_manager.connect(device_addr, timeout, attempts)
+            return prana_device
 
     @rpc_method
     async def discover(self, timeout=4) -> List[PranaDeviceInfoDTO]:
