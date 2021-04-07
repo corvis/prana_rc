@@ -364,8 +364,6 @@ Please, create a ticket if you tested it with another device model so we could e
 
 * Using device password is not supported
 * Reading information form built-in sensors (for Eco Energy series) is limited. 
-At the moment VOC and CO2 sensors are not supported.
-* Changing brightness is not supported
 
 # Credits
 * Dmitry Berezovsky, author
