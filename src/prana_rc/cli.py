@@ -21,7 +21,7 @@ import inspect
 import pkgutil
 import signal
 from asyncio import CancelledError
-
+import platform
 from typing import Type, List
 
 import prana_rc.__version__
@@ -37,7 +37,6 @@ from prana_rc.entity import Mode
 from prana_rc.service import PranaDeviceManager
 
 PRANA_RC_VERSION = prana_rc.__version__.__version__
-SHUTDOWN_SIGNALS = (signal.SIGHUP, signal.SIGTERM, signal.SIGINT)
 
 supplementary_parser = argparse.ArgumentParser(add_help=False)
 register_global_arguments(supplementary_parser)
@@ -279,8 +278,9 @@ def run_cli():
     args = parser.parse_args()
     if hasattr(args, "handler"):
         # Register on shutdown callback
-        for s in SHUTDOWN_SIGNALS:
-            loop.add_signal_handler(s, lambda s=s: asyncio.create_task(on_shutdown(s, loop, device_manager)))
+        if platform.system() != "Windows":
+            for s in (signal.SIGHUP, signal.SIGTERM, signal.SIGINT):
+                loop.add_signal_handler(s, lambda s=s: asyncio.create_task(on_shutdown(s, loop, device_manager)))
         # Run main login
         try:
             loop.run_until_complete(asyncio.ensure_future(handle_wrapper(device_manager, args)))
